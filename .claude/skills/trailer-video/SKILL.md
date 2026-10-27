@@ -28,5 +28,12 @@ The reference film is `trailer/` (30 s launch trailer for *The Perimenopause Com
 - Tone: calm, warm, honest. No fear-based hooks, no miracle claims. Health products end with "General health education. Not a substitute for medical advice."
 - Music: soft pad + arpeggiated piano in D major, bell accents on key beats, paper swooshes on transitions.
 
+## Voice-over and Remotion
+- First run `sh setup-media.sh` (fresh sessions lose installed packages and models).
+- **Kokoro** (best quality, English + French `ff_siwis`): `Kokoro('/root/tts-models/kokoro-v1.0.onnx','/root/tts-models/voices-v1.0.bin').create(text, voice='af_heart', speed=.95, lang='en-us')`. Good brand voices: `af_heart`, `af_bella`, `bf_emma` (British). Samples in `voice-samples/`.
+- **Piper** (fast, light): `echo "text" | python3 -m piper -m /root/tts-models/fr_FR-siwis-medium.onnx -f out.wav`.
+- Time scenes to the voice: generate the voice first, read its durations, then set scene timings.
+- **Remotion** (React video) lives in `remotion/`: `npx remotion render src/index.ts Teaser out/x.mp4`. Good for text-led, social and templated videos; the canvas approach in `trailer/` is better for painterly hand-made looks.
+
 ## Other styles
 For a different look, take inspiration from these open libraries (clone to the scratchpad, read the style guide, adapt): lemomo-ai/lemo-opuscar (59 film styles + a skill), Vincentwei1021/mg-styles-15 (15 motion-design styles with prompts and source), JohnHeibel/ClaudeAnimationBase (p5.brush character animation), mexicat/pdoom-video (Three.js lyric video), joeseesun/opus-video-prompts, yihui-dev/awesome-opus5-5-videos, athemeroy/awesome-claude-5-5-videos (prompt collections).

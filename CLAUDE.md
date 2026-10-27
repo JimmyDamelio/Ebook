@@ -11,3 +11,6 @@ The owner speaks French; reply in French. Marketing copy for the products is in 
 
 ## Contents
 - `trailer/` — 30 s launch trailer made in code (MP4 + sources). To make more videos, use the `trailer-video` skill in `.claude/skills/`.
+- `remotion/` — Remotion (React video) project; test teaser 9:16 with voice-over.
+- `voice-samples/` — text-to-speech samples (Kokoro, Piper).
+- `setup-media.sh` — run first in a new session to reinstall voices + Remotion.
