@@ -13,5 +13,6 @@ The owner speaks French; reply in French. Marketing copy for the products is in 
 - `trailer/` — 30 s launch trailer made in code (MP4 + sources). To make more videos, use the `trailer-video` skill in `.claude/skills/`.
 - `remotion/` — Remotion (React video) project; test teaser 9:16 with voice-over.
 - `.claude/skills/` — trailer-video plus installed open-source skills: motion-design (LottieFiles), gsap-* (GreenSock), threejs-*, design-dna, genjutsu (cast, paint, bunshin + `_jutsu/`).
+- `.claude/agents/` — 283 specialist subagents from msitarzewski/agency-agents (MIT): marketing (tiktok-strategist, instagram-curator, content-creator, email-strategist, seo-specialist, book-co-author…), design, sales, engineering, etc. Use them only when the owner asks for a team/agents.
 - `voice-samples/` — text-to-speech samples (Kokoro, Piper).
 - `setup-media.sh` — run first in a new session to reinstall voices, Remotion and Agent Reach (`agent-reach read <url>` to read X/Twitter, YouTube subtitles, Reddit…; binary in ~/.local/bin).
