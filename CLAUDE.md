@@ -13,6 +13,6 @@ The owner speaks French; reply in French. Marketing copy for the products is in 
 - `trailer/` — 30 s launch trailer made in code (MP4 + sources). To make more videos, use the `trailer-video` skill in `.claude/skills/`.
 - `remotion/` — Remotion (React video) project; test teaser 9:16 with voice-over.
 - `.claude/skills/trailer-video` — Sage & Season brand video skill (palette, type, tone).
-- General skills and agents (video-in-code, motion-design, GSAP, Three.js, design-dna, genjutsu, 283 agents) live in the shared toolkit github.com/JimmyDamelio/edunos-claude-toolkit, installed into ~/.claude by its install.sh.
+- General skills and agents (video-in-code, motion-design, GSAP, Three.js, design-dna, genjutsu, real-sfx, earshot, openverse, 49 active agents + 235 in a library) live in the shared toolkit github.com/JimmyDamelio/edunos-claude-toolkit, installed into ~/.claude by its install.sh.
 - `voice-samples/` — text-to-speech samples (Kokoro, Piper).
 - `setup-media.sh` — run first in a new session if the toolkit isn't installed yet: installs the toolkit (voices, Agent Reach, skills, agents) and Remotion deps (`agent-reach read <url>` to read X/Twitter, YouTube subtitles, Reddit…; binary in ~/.local/bin).
