@@ -35,7 +35,7 @@ The reference film is `trailer/` (30 s launch trailer for *The Perimenopause Com
 - Time scenes to the voice: generate the voice first, read its durations, then set scene timings.
 - **Remotion** (React video) lives in `remotion/`: `npx remotion render src/index.ts Teaser out/x.mp4`. Good for text-led, social and templated videos; the canvas approach in `trailer/` is better for painterly hand-made looks.
 
-## Companion skills (installed in this repo)
+## Companion skills (from the edunos-claude-toolkit, installed in ~/.claude)
 - `motion-design` (LottieFiles): timing, easing, choreography, Disney principles. Read it when planning any animation.
 - `gsap-*` (official GreenSock): timelines and easing; GSAP timelines can be seeked frame by frame (`tl.seek(t)`) inside `renderAt(t)`.
 - `threejs-*`: 3D scenes, lighting, shaders, post-processing for 3D trailers (book in 3D, product shots).

@@ -1,18 +1,8 @@
 #!/bin/sh
-# Installs the video/voice toolchain and Agent Reach in a fresh cloud session (~1 min).
+# New session: install the shared toolkit (skills, agents, voices, Agent Reach), then this project's Remotion deps.
 set -e
 cd "$(dirname "$0")"
-pip install -q kokoro-onnx piper-tts soundfile numpy
-M=/root/tts-models; mkdir -p $M
-[ -f $M/kokoro-v1.0.onnx ] || curl -sSL -o $M/kokoro-v1.0.onnx https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.onnx
-[ -f $M/voices-v1.0.bin ] || curl -sSL -o $M/voices-v1.0.bin https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin
-for v in fr/fr_FR/siwis/medium/fr_FR-siwis-medium en/en_US/lessac/medium/en_US-lessac-medium; do
-  n=$(basename $v)
-  [ -f $M/$n.onnx ] || { curl -sSL -o $M/$n.onnx "https://huggingface.co/rhasspy/piper-voices/resolve/main/$v.onnx"; curl -sSL -o $M/$n.onnx.json "https://huggingface.co/rhasspy/piper-voices/resolve/main/$v.onnx.json"; }
-done
+[ -d /tmp/edunos-toolkit ] || git clone -q --depth 1 https://github.com/JimmyDamelio/edunos-claude-toolkit /tmp/edunos-toolkit
+sh /tmp/edunos-toolkit/install.sh
 (cd remotion && npm install --silent)
-# Agent Reach: read X/Twitter, YouTube subtitles, Reddit, GitHub... (read-only)
-command -v uv >/dev/null || pip install -q uv
-export PATH="$HOME/.local/bin:$PATH"
-command -v agent-reach >/dev/null || { uv tool install -q https://github.com/Panniantong/Agent-Reach/releases/latest/download/agent-reach.zip && agent-reach setup >/dev/null; }
-echo "media toolchain ready"
+echo "Ebook media setup ready"
