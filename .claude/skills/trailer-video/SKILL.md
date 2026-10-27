@@ -35,5 +35,12 @@ The reference film is `trailer/` (30 s launch trailer for *The Perimenopause Com
 - Time scenes to the voice: generate the voice first, read its durations, then set scene timings.
 - **Remotion** (React video) lives in `remotion/`: `npx remotion render src/index.ts Teaser out/x.mp4`. Good for text-led, social and templated videos; the canvas approach in `trailer/` is better for painterly hand-made looks.
 
+## Companion skills (installed in this repo)
+- `motion-design` (LottieFiles): timing, easing, choreography, Disney principles. Read it when planning any animation.
+- `gsap-*` (official GreenSock): timelines and easing; GSAP timelines can be seeked frame by frame (`tl.seek(t)`) inside `renderAt(t)`.
+- `threejs-*`: 3D scenes, lighting, shaders, post-processing for 3D trailers (book in 3D, product shots).
+- `design-dna`: turn reference images/URLs into a structured style profile, then generate from it.
+- `cast` / `paint` / `bunshin` (genjutsu, modules in `_jutsu/`): motion and art direction for websites and apps.
+
 ## Other styles
 For a different look, take inspiration from these open libraries (clone to the scratchpad, read the style guide, adapt): lemomo-ai/lemo-opuscar (59 film styles + a skill), Vincentwei1021/mg-styles-15 (15 motion-design styles with prompts and source), JohnHeibel/ClaudeAnimationBase (p5.brush character animation), mexicat/pdoom-video (Three.js lyric video), joeseesun/opus-video-prompts, yihui-dev/awesome-opus5-5-videos, athemeroy/awesome-claude-5-5-videos (prompt collections).
