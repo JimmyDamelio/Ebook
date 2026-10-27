@@ -1,5 +1,5 @@
 #!/bin/sh
-# Installs the video/voice toolchain in a fresh cloud session (~1 min).
+# Installs the video/voice toolchain and Agent Reach in a fresh cloud session (~1 min).
 set -e
 cd "$(dirname "$0")"
 pip install -q kokoro-onnx piper-tts soundfile numpy
@@ -11,4 +11,8 @@ for v in fr/fr_FR/siwis/medium/fr_FR-siwis-medium en/en_US/lessac/medium/en_US-l
   [ -f $M/$n.onnx ] || { curl -sSL -o $M/$n.onnx "https://huggingface.co/rhasspy/piper-voices/resolve/main/$v.onnx"; curl -sSL -o $M/$n.onnx.json "https://huggingface.co/rhasspy/piper-voices/resolve/main/$v.onnx.json"; }
 done
 (cd remotion && npm install --silent)
+# Agent Reach: read X/Twitter, YouTube subtitles, Reddit, GitHub... (read-only)
+command -v uv >/dev/null || pip install -q uv
+export PATH="$HOME/.local/bin:$PATH"
+command -v agent-reach >/dev/null || { uv tool install -q https://github.com/Panniantong/Agent-Reach/releases/latest/download/agent-reach.zip && agent-reach setup >/dev/null; }
 echo "media toolchain ready"
