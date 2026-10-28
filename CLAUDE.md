@@ -14,5 +14,6 @@ The owner speaks French; reply in French. Marketing copy for the products is in 
 - `remotion/` — Remotion (React video) project; test teaser 9:16 with voice-over.
 - `.claude/skills/trailer-video` — Sage & Season brand video skill (palette, type, tone).
 - General skills and agents (video-in-code, motion-design, GSAP, Three.js, design-dna, genjutsu, real-sfx, earshot, openverse, 49 active agents + 235 in a library) live in the shared toolkit github.com/JimmyDamelio/edunos-claude-toolkit, installed into ~/.claude by its install.sh.
+- `youtube-channel/` — autopilot YouTube channel **Edunos Studio** ("One prompt. One video." Shorts made in code, promoting *Prompt to Reel* on edunosstudio.gumroad.com). A scheduled task runs `youtube-channel/PLAYBOOK.md` Tue/Thu/Sat; setup steps for the owner in its README.
 - `voice-samples/` — text-to-speech samples (Kokoro, Piper).
 - `setup-media.sh` — run first in a new session if the toolkit isn't installed yet: installs the toolkit (voices, Agent Reach, skills, agents) and Remotion deps (`agent-reach read <url>` to read X/Twitter, YouTube subtitles, Reddit…; binary in ~/.local/bin).

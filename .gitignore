@@ -4,3 +4,8 @@ trailer/audio.wav
 trailer/node_modules
 remotion/node_modules/
 remotion/out/
+youtube-channel/episodes/*/frames/
+youtube-channel/episodes/*/stills/
+youtube-channel/episodes/*/audio.wav
+youtube-channel/episodes/*/*sheet.png
+youtube-channel/__pycache__/
