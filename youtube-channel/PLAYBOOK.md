@@ -5,7 +5,7 @@ Every scheduled run follows this file from top to bottom. One run = one new YouT
 ## The channel
 - **Name:** Edunos Studio (store: edunosstudio.gumroad.com). Language: English.
 - **Series:** *One prompt. One video.* Every Short shows the prompt being typed, then the animation Claude Code wrote from it, entirely in code (no stock footage, no AI video model).
-- **Goal:** show what code-made animation can do, and send viewers to the guide **Prompt to Reel** ($9.99, https://edunosstudio.gumroad.com/l/prompt-to-reel). Re-read the product with `mcp__Gumroad__get_product rineb` before quoting anything from it; never invent claims, numbers or results.
+- **Goal:** show what code-made animation can do, and send viewers to the guide **Prompt to Reel** ($9.99, https://edunosstudio.gumroad.com/l/prompt-to-reel). Quote only what this file says about it (scheduled runs have no Gumroad tool); never invent claims, numbers or results.
 - **Posting schedule:** Tuesday, Thursday and Saturday, uploads around 17:40 UTC (12:40 New York, 17:40 London). The schedule lives in the scheduled task, not here.
 
 ## Format (every episode)
