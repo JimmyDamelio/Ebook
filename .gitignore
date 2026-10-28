@@ -4,3 +4,8 @@ trailer/audio.wav
 trailer/node_modules
 remotion/node_modules/
 remotion/out/
+social/*/frames/
+social/*/stills/
+social/*/audio.wav
+social/*/vo/
+social/*/sheet.png

@@ -1,0 +1,575 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:'Fraunces';src:url(fonts/fraunces.woff2) format('woff2');font-weight:100 900;font-style:normal}
+@font-face{font-family:'Fraunces';src:url(fonts/fraunces-italic.woff2) format('woff2');font-weight:100 900;font-style:italic}
+@font-face{font-family:'Caveat';src:url(fonts/caveat.woff2) format('woff2');font-weight:400 700}
+html,body{margin:0;background:#111}
+canvas{display:block;height:100vh;width:auto;margin:0 auto}
+</style></head>
+<body><canvas id="c" width="1080" height="1920"></canvas>
+<script>
+const W = 1080, H = 1920, DURATION = 27.5;
+const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+const C = {
+  paper: '#F3ECDF', paper2: '#EADFCB', ink: '#2F3A33', inkSoft: '#56645A',
+  sage: '#8EA685', sageD: '#5C7658', sageDD: '#3F5641', terra: '#C77B5C', blush: '#E9BCA4',
+  night: '#18222D', night2: '#2A3A48', moon: '#F2E2C0', gold: '#D8A55B', cream: '#FBF6EC'
+};
+let BOIL = 0;
+
+// ---------- math ----------
+function mulberry(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const lerp = (a, b, k) => a + (b - a) * k;
+const seg = (t, a, b) => clamp((t - a) / (b - a));
+const eio = k => k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+const eo = k => 1 - Math.pow(1 - k, 3);
+const eback = k => { const c1 = 1.4, c3 = c1 + 1; return 1 + c3 * Math.pow(k - 1, 3) + c1 * Math.pow(k - 1, 2); };
+// fade in over [a,a+d], out over [b-d2,b]
+const life = (t, a, b, d = .6, d2 = .5) => Math.min(eo(seg(t, a, a + d)), 1 - eio(seg(t, b - d2, b)));
+
+// ---------- paper & grain ----------
+function makePaper() {
+  const p = document.createElement('canvas'); p.width = W; p.height = H; const g = p.getContext('2d');
+  g.fillStyle = C.paper; g.fillRect(0, 0, W, H);
+  const R = mulberry(11);
+  for (let i = 0; i < 26; i++) { // large soft tonal blotches
+    const x = R() * W, y = R() * H, r = 200 + R() * 500;
+    const gr = g.createRadialGradient(x, y, 0, x, y, r);
+    const rgb = R() < .45 ? '222,206,178' : '252,248,240';
+    gr.addColorStop(0, `rgba(${rgb},0.16)`); gr.addColorStop(1, `rgba(${rgb},0)`);
+    g.fillStyle = gr; g.fillRect(0, 0, W, H);
+  }
+  g.globalAlpha = .05; g.strokeStyle = '#7a6a52'; g.lineWidth = 1;
+  for (let i = 0; i < 1600; i++) { // fibres
+    const x = R() * W, y = R() * H, a = R() * Math.PI, l = 4 + R() * 18;
+    g.beginPath(); g.moveTo(x, y); g.lineTo(x + Math.cos(a) * l, y + Math.sin(a) * l); g.stroke();
+  }
+  const id = g.getImageData(0, 0, W, H), d = id.data;
+  for (let i = 0; i < d.length; i += 4) { const n = (R() - .5) * 14; d[i] += n; d[i + 1] += n; d[i + 2] += n; }
+  g.putImageData(id, 0, 0);
+  return p;
+}
+function makeGrain(seed) {
+  const p = document.createElement('canvas'); p.width = 540; p.height = 960; const g = p.getContext('2d');
+  const id = g.createImageData(540, 960), d = id.data, R = mulberry(seed);
+  for (let i = 0; i < d.length; i += 4) { const v = R() * 255; d[i] = d[i + 1] = d[i + 2] = v; d[i + 3] = 255; }
+  g.putImageData(id, 0, 0); return p;
+}
+let PAPER, GRAINS;
+
+// ---------- drawing primitives ----------
+function blobPath(g, cx, cy, r, seed, amp = .12, n = 72, sy = 1) {
+  const R = mulberry(seed); const p = [R() * 6.28, R() * 6.28, R() * 6.28];
+  const f = [2 + Math.floor(R() * 2), 3 + Math.floor(R() * 3), 7 + Math.floor(R() * 5)];
+  g.beginPath();
+  for (let i = 0; i <= n; i++) {
+    const a = i / n * Math.PI * 2;
+    const k = 1 + amp * (.6 * Math.sin(a * f[0] + p[0]) + .3 * Math.sin(a * f[1] + p[1]) + .15 * Math.sin(a * f[2] + p[2]));
+    const x = cx + Math.cos(a) * r * k, y = cy + Math.sin(a) * r * k * sy;
+    i ? g.lineTo(x, y) : g.moveTo(x, y);
+  }
+  g.closePath();
+}
+function wash(g, cx, cy, r, col, seed, alpha = 1, layers = 12, sy = 1) {
+  if (alpha <= 0 || r <= 0) return;
+  const R = mulberry(seed * 7 + 3); const ga = g.globalAlpha;
+  g.save(); g.fillStyle = col;
+  for (let k = 0; k < layers; k++) {
+    g.globalAlpha = ga * alpha * .09;
+    blobPath(g, cx + (R() - .5) * r * .25, cy + (R() - .5) * r * .25 * sy, r * (.68 + .36 * R()), seed * 31 + k, .17, 72, sy);
+    g.fill();
+  }
+  g.globalAlpha = ga * alpha * .22; g.lineWidth = 2.2; g.strokeStyle = col;
+  blobPath(g, cx, cy, r * .97, seed * 31 + 99, .15, 72, sy); g.stroke();
+  g.restore();
+}
+function densify(pts, step = 5) {
+  const out = [];
+  for (let i = 0; i < pts.length - 1; i++) {
+    const [x0, y0] = pts[i], [x1, y1] = pts[i + 1];
+    const n = Math.max(1, Math.ceil(Math.hypot(x1 - x0, y1 - y0) / step));
+    for (let j = 0; j < n; j++) out.push([lerp(x0, x1, j / n), lerp(y0, y1, j / n)]);
+  }
+  out.push(pts[pts.length - 1]); return out;
+}
+function ink(g, pts, o = {}) {
+  const { seed = 1, amp = 1.5, width = 3, color = C.ink, prog = 1, alpha = 1, step = 5 } = o;
+  if (prog <= 0 || alpha <= 0) return;
+  const arr = densify(pts, step), N = Math.max(2, Math.floor(arr.length * clamp(prog)));
+  const s1 = seed * 1.7 + BOIL * 2.3, s2 = seed * 3.1 + BOIL * 1.3;
+  g.save(); g.globalAlpha *= alpha; g.strokeStyle = color; g.lineWidth = width; g.lineCap = 'round'; g.lineJoin = 'round';
+  g.beginPath();
+  for (let i = 0; i < N; i++) {
+    const [x, y] = arr[i];
+    const dx = amp * (Math.sin(i * .19 + s1) + .5 * Math.sin(i * .051 + s2 * 2));
+    const dy = amp * (Math.sin(i * .23 + s2) + .5 * Math.sin(i * .043 + s1 * 2));
+    i ? g.lineTo(x + dx, y + dy) : g.moveTo(x + dx, y + dy);
+  }
+  g.stroke(); g.restore();
+}
+function curve(x0, y0, cx, cy, x1, y1, n = 40) {
+  const p = []; for (let i = 0; i <= n; i++) { const k = i / n, a = (1 - k) * (1 - k), b = 2 * k * (1 - k), c = k * k; p.push([a * x0 + b * cx + c * x1, a * y0 + b * cy + c * y1]); } return p;
+}
+function inkRect(g, x, y, w, h, o = {}) {
+  const e = 6;
+  ink(g, [[x - e, y], [x + w + e * .5, y + 1], [x + w, y - e * .5], [x + w - 1, y + h + e], [x + w + e * .4, y + h], [x - e * .6, y + h - 1], [x, y + h + e * .4], [x + 1, y - e]], o);
+}
+function inkEllipse(g, cx, cy, rx, ry, o = {}) {
+  const p = []; const n = 64; const a0 = -.4;
+  for (let i = 0; i <= n * 1.12; i++) { const a = a0 + i / n * Math.PI * 2; const k = 1 + .04 * Math.sin(i * .3); p.push([cx + Math.cos(a) * rx * k, cy + Math.sin(a) * ry * k]); }
+  ink(g, p, o);
+}
+function text(g, s, x, y, o = {}) {
+  const { size = 60, font = 'Fraunces', weight = 300, italic = false, color = C.ink, align = 'left', alpha = 1, rise = 0, blur = 0, spacing = 0, rot = 0, base = 'alphabetic' } = o;
+  if (alpha <= 0) return;
+  g.save(); g.globalAlpha *= clamp(alpha);
+  g.font = `${italic ? 'italic ' : ''}${weight} ${size}px ${font}`;
+  g.textAlign = align; g.textBaseline = base; g.fillStyle = color; g.letterSpacing = spacing + 'px';
+  if (blur > .2) g.filter = `blur(${blur}px)`;
+  g.translate(x, y + rise); if (rot) g.rotate(rot);
+  g.fillText(s, 0, 0); g.restore();
+}
+// text that reveals with rise + de-blur
+function reveal(g, s, x, y, t, a, b, o = {}) {
+  const k = life(t, a, b, o.din ?? .8, o.dout ?? .5);
+  const kin = eo(seg(t, a, a + (o.din ?? .8)));
+  text(g, s, x, y, { ...o, alpha: k * (o.alpha ?? 1), rise: (1 - kin) * (o.riseBy ?? 24), blur: (1 - kin) * 10 });
+}
+function fitSize(g, s, font, weight, italic, maxW, start) {
+  let sz = start; g.font = `${italic ? 'italic ' : ''}${weight} ${sz}px ${font}`;
+  while (g.measureText(s).width > maxW && sz > 10) { sz -= 1; g.font = `${italic ? 'italic ' : ''}${weight} ${sz}px ${font}`; }
+  return sz;
+}
+function leaf(g, x, y, len, ang, wid, col, seed, alpha = 1) {
+  const R = mulberry(seed); const ga = g.globalAlpha;
+  g.save(); g.translate(x, y); g.rotate(ang); g.fillStyle = col;
+  for (let k = 0; k < 5; k++) {
+    g.globalAlpha = ga * alpha * .22; const j = (R() - .5) * 3;
+    g.beginPath(); g.moveTo(0, 0);
+    g.quadraticCurveTo(len * .45, -wid + j, len, j * .5);
+    g.quadraticCurveTo(len * .5, wid * .9 + j, 0, 0); g.fill();
+  }
+  g.globalAlpha = ga * alpha * .35; g.strokeStyle = col; g.lineWidth = 1.2;
+  g.beginPath(); g.moveTo(len * .05, 0); g.quadraticCurveTo(len * .5, -1, len * .92, 0); g.stroke();
+  g.restore();
+}
+function branch(g, x0, y0, x1, y1, bend, col, leafCol, seed, prog = 1, scale = 1, alpha = 1) {
+  const pts = curve(x0, y0, (x0 + x1) / 2 + bend, (y0 + y1) / 2 - bend * .4, x1, y1, 60);
+  ink(g, pts, { seed, width: 2.6 * scale, color: col, prog, alpha, amp: .8 });
+  const R = mulberry(seed + 5); const n = 9;
+  for (let i = 1; i <= n; i++) {
+    const s = i / (n + 1); if (s > prog) break;
+    const idx = Math.floor(s * (pts.length - 1)); const [px, py] = pts[idx]; const [qx, qy] = pts[Math.min(idx + 1, pts.length - 1)];
+    const base = Math.atan2(qy - py, qx - px); const side = i % 2 ? 1 : -1;
+    const grow = eo(clamp((prog - s) * 6));
+    leaf(g, px, py, (46 + R() * 22) * scale * grow * (1 - s * .35), base + side * (.75 + R() * .3), 15 * scale * grow, leafCol, seed * 13 + i, alpha);
+  }
+  const [ex, ey] = pts[pts.length - 1];
+  if (prog >= .98) leaf(g, ex, ey, 40 * scale, Math.atan2(y1 - y0, x1 - x0) - .2, 13 * scale, leafCol, seed * 17, alpha);
+}
+
+// ---------- transitions ----------
+function blobReveal(t, a, b, cx, cy, edgeCol, drawA, drawB, seed = 5) {
+  if (t < a) return drawA(t);
+  if (t >= b) return drawB(t);
+  const k = eio(seg(t, a, b)); const R = lerp(0, 2300, k);
+  drawA(t);
+  ctx.save(); blobPath(ctx, cx, cy, R, seed, .14); ctx.clip(); drawB(t); ctx.restore();
+  ctx.save(); ctx.globalCompositeOperation = 'multiply';
+  for (let i = 0; i < 3; i++) { ctx.globalAlpha = .18 * (1 - k * .6); ctx.lineWidth = 26 - i * 8; ctx.strokeStyle = edgeCol; blobPath(ctx, cx, cy, R * (1 - i * .01), seed, .14); ctx.stroke(); }
+  ctx.restore();
+}
+function brushWipe(t, a, b, col, drawA, drawB, seed = 3) {
+  if (t < a) return drawA(t);
+  if (t >= b) return drawB(t);
+  const k = eio(seg(t, a, b)); const X = lerp(-260, W + 260, k);
+  drawA(t);
+  const edge = y => X + 70 * Math.sin(y * .006 + seed) + 26 * Math.sin(y * .019 + seed * 2) + 6 * Math.sin(y * .05 + seed);
+  ctx.save(); ctx.beginPath(); ctx.moveTo(-10, -10);
+  for (let y = -10; y <= H + 10; y += 6) ctx.lineTo(edge(y), y);
+  ctx.lineTo(-10, H + 10); ctx.closePath(); ctx.clip(); drawB(t); ctx.restore();
+  ctx.save(); ctx.globalCompositeOperation = 'multiply';
+  for (let i = 0; i < 4; i++) {
+    ctx.globalAlpha = .14; ctx.strokeStyle = col; ctx.lineWidth = 60 - i * 14; ctx.beginPath();
+    for (let y = -10; y <= H + 10; y += 6) { const x = edge(y) - 30 + i * 6; y < 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); }
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+function paperBg(g) { g.drawImage(PAPER, 0, 0); }
+function camera(g, k, z = .03, cx = W / 2, cy = H / 2) {
+  const s = 1 + z * k; g.translate(cx, cy); g.scale(s, s); g.translate(-cx, -cy);
+}
+
+// ---------- book cover ----------
+function drawBook(g, x, y, w, alpha = 1, artProg = 1) {
+  const h = w * 1.414; const sc = w / 520;
+  g.save(); g.globalAlpha *= alpha;
+  // shadow
+  g.save(); g.globalCompositeOperation = 'multiply';
+  g.save(); g.translate(x + w * .55, y + h + 6 * sc); g.scale(1, .16);
+  const sg = g.createRadialGradient(0, 0, 0, 0, 0, w * .8);
+  sg.addColorStop(0, 'rgba(70,60,40,.4)'); sg.addColorStop(1, 'rgba(70,60,40,0)');
+  g.fillStyle = sg; g.beginPath(); g.arc(0, 0, w * .8, 0, 6.28); g.fill(); g.restore();
+  g.fillStyle = 'rgba(60,50,35,.18)'; g.filter = `blur(${18 * sc}px)`; g.fillRect(x + 18 * sc, y + 26 * sc, w, h); g.filter = 'none';
+  g.restore();
+  // pages edge
+  g.fillStyle = '#efe6d4'; g.fillRect(x + 8 * sc, y + 8 * sc, w, h - 6 * sc);
+  g.strokeStyle = 'rgba(120,100,70,.25)'; g.lineWidth = 1;
+  for (let i = 1; i < 5; i++) { g.beginPath(); g.moveTo(x + w + i * 1.6 * sc, y + 10 * sc); g.lineTo(x + w + i * 1.6 * sc, y + h); g.stroke(); }
+  // cover
+  g.save(); g.beginPath(); g.rect(x, y, w, h); g.clip();
+  const cg = g.createLinearGradient(x, y, x + w, y + h); cg.addColorStop(0, '#7E9A78'); cg.addColorStop(1, '#5D7A5A');
+  g.fillStyle = cg; g.fillRect(x, y, w, h);
+  g.globalCompositeOperation = 'source-over';
+  wash(g, x + w * .25, y + h * .2, w * .45, '#A9BFA0', 41, .9);
+  wash(g, x + w * .85, y + h * .72, w * .5, '#4E6A4C', 42, .8);
+  wash(g, x + w * .6, y + h * .95, w * .35, C.blush, 43, .5);
+  wash(g, x + w * .15, y + h * .85, w * .25, C.gold, 44, .25);
+  // botanical
+  branch(g, x + w * 1.02, y + h * .98, x + w * .48, y + h * .58, -40 * sc, '#3F5641', '#2F4532', 77, artProg, sc, .9);
+  branch(g, x + w * 1.05, y + h * .86, x + w * .7, y + h * .5, 30 * sc, '#3F5641', C.blush, 78, artProg, sc * .8, .8);
+  // type
+  const tx = x + 46 * sc;
+  text(g, 'THE', tx, y + 108 * sc, { size: 22 * sc, weight: 500, color: C.cream, spacing: 6 * sc });
+  const s1 = fitSize(g, 'Perimenopause', 'Fraunces', 500, false, w - 92 * sc, 74 * sc);
+  text(g, 'Perimenopause', tx, y + 182 * sc, { size: s1, weight: 500, color: C.cream });
+  text(g, 'Companion', tx, y + 252 * sc, { size: s1 * 1.02, weight: 300, italic: true, color: C.cream });
+  g.fillStyle = 'rgba(251,246,236,.7)'; g.fillRect(tx, y + 290 * sc, 64 * sc, 2 * sc);
+  text(g, 'Guide + 30-Day Printable Workbook', tx, y + 334 * sc, { size: 23 * sc, weight: 300, color: C.cream });
+  text(g, 'SAGE & SEASON', tx, y + h - 46 * sc, { size: 17 * sc, weight: 500, color: C.cream, spacing: 5 * sc, alpha: .9 });
+  // spine shading
+  const sp = g.createLinearGradient(x, 0, x + 34 * sc, 0); sp.addColorStop(0, 'rgba(0,0,0,.28)'); sp.addColorStop(.35, 'rgba(255,255,255,.12)'); sp.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = sp; g.fillRect(x, y, 34 * sc, h);
+  g.restore();
+  g.restore();
+}
+
+// ---------- cards (from trailer/) ----------
+function trackerCard(g, t, x, y, a0) {
+  g.save(); g.translate(x, y); g.rotate(-.025);
+  g.save(); g.fillStyle = 'rgba(60,50,35,.16)'; g.filter = 'blur(16px)'; g.fillRect(16, 22, 640, 470); g.restore();
+  g.fillStyle = C.cream; g.fillRect(0, 0, 640, 470);
+  text(g, 'Daily tracker', 36, 62, { size: 34, weight: 500, color: C.ink });
+  text(g, 'day 12', 604, 62, { font: 'Caveat', size: 34, color: C.terra, align: 'right' });
+  const rows = [['sleep', C.sageD, 1], ['energy', C.gold, 2], ['mood', C.terra, 3]];
+  rows.forEach(([lab, col, s], r) => {
+    const yy = 150 + r * 115;
+    text(g, lab, 36, yy + 8, { font: 'Caveat', size: 38, color: C.inkSoft });
+    g.strokeStyle = 'rgba(80,80,60,.15)'; g.lineWidth = 1; g.beginPath(); g.moveTo(150, yy + 30); g.lineTo(600, yy + 30); g.stroke();
+    const pts = []; for (let i = 0; i <= 12; i++) pts.push([150 + i * 37.5, yy + 6 - 26 * Math.sin(i * .7 + s * 1.3) * (.6 + .4 * Math.cos(i * .33 + s))]);
+    const p = eo(seg(t, a0 + r * .15, a0 + .9 + r * .15));
+    ink(g, pts, { seed: 80 + r, color: col, width: 4, prog: p, amp: .8 });
+    pts.forEach(([px, py], i) => { if (i / 12 <= p) { g.fillStyle = col; g.beginPath(); g.arc(px, py, 5, 0, 6.28); g.fill(); } });
+  });
+  g.restore();
+}
+function summaryCard(g, t, x, y, a0) {
+  g.save(); g.translate(x, y); g.rotate(.03);
+  g.save(); g.fillStyle = 'rgba(60,50,35,.18)'; g.filter = 'blur(18px)'; g.fillRect(18, 24, 560, 720); g.restore();
+  g.fillStyle = C.cream; g.fillRect(0, 0, 560, 720);
+  g.fillStyle = C.sage; g.fillRect(0, 0, 560, 14);
+  text(g, 'My 30-Day Summary', 40, 80, { size: 40, weight: 500, color: C.ink });
+  text(g, 'for my appointment', 40, 122, { font: 'Caveat', size: 34, color: C.sageD });
+  const bars = [['bleeding', C.terra], ['sleep', C.sageD], ['mood', C.gold]];
+  bars.forEach(([lab, col], r) => {
+    const yy = 190 + r * 70; text(g, lab, 40, yy + 10, { font: 'Caveat', size: 32, color: C.inkSoft });
+    for (let i = 0; i < 30; i++) {
+      const v = (DAYV[i] + 1) / 3 * (r === 0 ? 1 : .5 + .5 * Math.abs(Math.sin(i * .5 + r)));
+      const h = 8 + 34 * v * eo(seg(t, a0 + i * .015 + r * .1, a0 + .5 + i * .015 + r * .1));
+      g.fillStyle = col; g.fillRect(170 + i * 12.5, yy + 16 - h, 8, h);
+    }
+  });
+  text(g, 'Questions to ask', 40, 440, { size: 30, weight: 500, color: C.ink });
+  ['What could explain these changes?', 'Which options suit me?', 'When should I come back?'].forEach((q, i) => {
+    const yy = 500 + i * 62;
+    inkRect(g, 42, yy - 26, 28, 28, { seed: 110 + i, width: 2, color: C.inkSoft, amp: .7 });
+    ink(g, [[46, yy - 12], [55, yy - 2], [76, yy - 34]], { seed: 120 + i, width: 4, color: C.terra, prog: eo(seg(t, a0 + .6 + i * .25, a0 + .9 + i * .25)), amp: .6 });
+    text(g, q, 92, yy, { size: 26, weight: 300, color: C.ink });
+  });
+  g.restore();
+}
+
+// ---------- 9:16 layout: captions stay inside x 125–925, y 700–1450 ----------
+const CX = 525, MAXW = 800;
+function cap(g, s, y, t, a, b, o = {}) {
+  const size = fitSize(g, s, o.font || 'Fraunces', o.weight ?? 300, !!o.italic, o.maxW || MAXW, o.size || 84);
+  reveal(g, s, CX, y, t, a, b, { align: 'center', ...o, size });
+}
+const MOON = new Set([8, 9, 14, 15, 26, 27, 28]);
+const DAYV = Array.from({ length: 30 }, (_, i) => MOON.has(i) ? 2 : (MOON.has(i - 1) || MOON.has(i + 1)) ? 1 : 0);
+
+// ---------- 1. night (0–3.0) ----------
+const STARS = (() => { const R = mulberry(99); return Array.from({ length: 60 }, () => [250 + R() * 580, 240 + R() * 500, .6 + R() * 1.6, R() * 6.28]); })();
+function archPath(g, x0, x1, top, spring, bottom) {
+  const cx = (x0 + x1) / 2, rx = (x1 - x0) / 2;
+  g.beginPath(); g.moveTo(x0, bottom); g.lineTo(x0, spring);
+  for (let i = 0; i <= 40; i++) { const a = Math.PI + i / 40 * Math.PI; g.lineTo(cx + Math.cos(a) * rx, spring + Math.sin(a) * (spring - top)); }
+  g.lineTo(x1, bottom); g.closePath();
+}
+function sNight(t) {
+  const g = ctx; g.save(); const ga = g.globalAlpha;
+  const bg = g.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, C.night); bg.addColorStop(1, '#121A22');
+  g.fillStyle = bg; g.fillRect(0, 0, W, H);
+  camera(g, seg(t, 0, 3.5), .06, W / 2, 900);
+  // window
+  const x0 = 250, x1 = 830, top = 240, spring = 430, bottom = 760;
+  g.save(); archPath(g, x0, x1, top, spring, bottom);
+  const sky = g.createLinearGradient(0, top, 0, bottom); sky.addColorStop(0, '#2C3E50'); sky.addColorStop(1, '#22313F');
+  g.fillStyle = sky; g.fill(); g.clip();
+  for (const [x, y, r, p] of STARS) { g.globalAlpha = ga * (.25 + .45 * (.5 + .5 * Math.sin(t * 1.6 + p))); g.fillStyle = C.moon; g.beginPath(); g.arc(x, y, r, 0, 6.28); g.fill(); }
+  g.globalAlpha = ga;
+  const mx = 660, my = 400, mr = 62;
+  const glow = g.createRadialGradient(mx, my, mr * .6, mx, my, mr * 3.4); glow.addColorStop(0, 'rgba(242,226,192,.25)'); glow.addColorStop(1, 'rgba(242,226,192,0)');
+  g.fillStyle = glow; g.fillRect(mx - 260, my - 260, 520, 520);
+  g.beginPath(); g.arc(mx, my, mr, 0, 6.28); g.arc(mx + 28, my - 18, mr * .92, 0, 6.28); g.fillStyle = C.moon; g.fill('evenodd');
+  g.restore();
+  const fr = { seed: 4, color: 'rgba(242,226,192,.32)', width: 3 };
+  const arch = []; for (let i = 0; i <= 40; i++) { const a = Math.PI + i / 40 * Math.PI; arch.push([540 + Math.cos(a) * 290, spring + Math.sin(a) * (spring - top)]); }
+  ink(g, [[x0, bottom], [x0, spring], ...arch, [x1, spring], [x1, bottom]], fr);
+  ink(g, [[540, top], [540, bottom]], { ...fr, seed: 5, width: 2.5 });
+  ink(g, [[x0, 560], [x1, 560]], { ...fr, seed: 6, width: 2.5 });
+  ink(g, [[x0 - 40, bottom + 6], [x1 + 40, bottom + 4]], { ...fr, seed: 7, width: 4 });
+  // curtain, hanging from above the frame, swaying
+  g.save(); const cg = g.createLinearGradient(60, 0, 340, 0); cg.addColorStop(0, '#18222F'); cg.addColorStop(1, '#2E4258');
+  g.fillStyle = cg; g.globalAlpha *= .96; g.beginPath(); g.moveTo(60, -10);
+  for (let y = -10; y <= 870; y += 10) g.lineTo(285 + 24 * Math.sin(y * .011 + t * 1.3) + Math.max(0, y - 150) * .06, y);
+  g.quadraticCurveTo(220, 915, 60, 880); g.closePath(); g.fill(); g.restore();
+  for (let k = 0; k < 3; k++) ink(g, Array.from({ length: 44 }, (_, i) => { const y = i * 20; return [130 + k * 45 + 12 * Math.sin(y * .011 + t * 1.3 + k) + Math.max(0, y - 150) * .03 * k, y]; }), { seed: 8 + k, color: 'rgba(242,226,192,.10)', width: 2 });
+  // warm light from the clock
+  const lg = g.createRadialGradient(540, 980, 40, 540, 980, 560); lg.addColorStop(0, 'rgba(216,165,91,.16)'); lg.addColorStop(1, 'rgba(216,165,91,0)');
+  g.fillStyle = lg; g.fillRect(0, 400, W, 1200);
+  // bedside clock: already lit on frame 0 (the hook)
+  ink(g, [[150, 1105], [930, 1100]], { seed: 9, color: 'rgba(242,226,192,.22)', width: 3 });
+  inkRect(g, 270, 840, 540, 250, { seed: 10, color: 'rgba(242,226,192,.38)', width: 3 });
+  ink(g, [[320, 1092], [320, 1108]], { seed: 11, color: 'rgba(242,226,192,.38)', width: 4 });
+  ink(g, [[760, 1092], [760, 1108]], { seed: 12, color: 'rgba(242,226,192,.38)', width: 4 });
+  const pulse = Math.exp(-Math.pow((t - .5) / .35, 2));
+  g.save(); g.shadowColor = `rgba(216,165,91,${.45 + .4 * pulse})`; g.shadowBlur = 40 + 50 * pulse;
+  g.font = '300 200px Fraunces'; const full = g.measureText('3:07').width;
+  g.font = 'italic 300 52px Fraunces'; const am = g.measureText('a.m.').width;
+  const tx = 540 - (full + 16 + am) / 2;
+  text(g, '3:07', tx, 1040, { size: 200, color: C.moon });
+  text(g, 'a.m.', tx + full + 16, 1040, { size: 52, italic: true, color: C.moon, alpha: .85 });
+  g.restore();
+  const pr = seg(t, .45, 1.6);
+  if (pr > 0 && pr < 1) { g.save(); g.globalAlpha *= (1 - pr) * .35; g.strokeStyle = C.gold; g.lineWidth = 2; g.beginPath(); g.ellipse(540, 965, 290 + pr * 200, 140 + pr * 100, 0, 0, 6.28); g.stroke(); g.restore(); }
+  cap(g, 'Wide awake. Again.', 1290, t, 1.35, 99, { size: 88, italic: true, color: C.cream });
+  g.restore();
+}
+
+// ---------- 2. words (3.0–6.4) ----------
+const WORDS = [['Hot.', 330, 800, 3.15], ['Foggy.', 690, 970, 3.75], ['Flat.', 360, 1140, 4.35], ['Tired but wired.', CX, 1330, 4.95]];
+function sWords(t) {
+  const g = ctx; g.save(); paperBg(g); camera(g, seg(t, 2.8, 6.9), .04);
+  wash(g, 540, 1050, 520, C.blush, 7, .3, 12, 1.3);
+  wash(g, 900, 400, 260, C.sage, 8, .25, 10, .8);
+  WORDS.forEach(([s, x, y, a], i) => {
+    const k = eo(seg(t, a - .05, a + .5)), fl = Math.sin(t * .9 + i * 1.7) * 6;
+    if (k <= 0) return;
+    if (i === 0) { // heat shimmer
+      wash(g, x, y - 40, 170, C.blush, 30, .9 * k, 10, .7);
+      for (let j = 0; j < 3; j++) ink(g, Array.from({ length: 16 }, (_, n) => [x - 60 + j * 60 + 10 * Math.sin(n * .8 + t * 4 + j), y - 130 - n * 7]), { seed: 31 + j, color: C.terra, width: 3, prog: k, alpha: .55 });
+    }
+    if (i === 1) { // fog smudge
+      g.save(); g.globalAlpha *= k; g.filter = 'blur(16px)'; g.fillStyle = 'rgba(150,146,140,.28)';
+      g.beginPath(); g.ellipse(x + 30 * Math.sin(t * .7), y - 30, 230, 60, 0, 0, 6.28); g.fill(); g.restore();
+    }
+    if (i === 2) ink(g, [[x - 120, y + 30], [x + 130, y + 32]], { seed: 33, color: C.sageD, width: 5, prog: eo(seg(t, a + .15, a + .6)) });
+    if (i === 3) ink(g, Array.from({ length: 13 }, (_, n) => [x - 300 + n * 50, y + 40 + (n % 2 ? -22 : 22)]), { seed: 34, color: C.terra, width: 4, prog: eo(seg(t, a + .3, a + .9)), step: 4 });
+    const big = i < 3;
+    const size = big ? 140 : fitSize(g, s, 'Fraunces', 300, true, MAXW, 104);
+    text(g, s, x, y + fl, { size, italic: !big, weight: 300, color: big ? C.ink : C.sageDD, align: 'center', alpha: k, rise: (1 - k) * 60, blur: (1 - k) * 10 });
+  });
+  g.restore();
+}
+
+// ---------- 3. scraps (6.4–10.0) ----------
+const SCRAPS = [
+  [270, 520, 280, 210, -.12, 1, 'note'], [760, 470, 250, 250, .09, 2, 'cal'],
+  [280, 1400, 230, 230, .1, 3, 'sticky'], [770, 1400, 280, 190, -.07, 4, 'note2']
+];
+function scrap(g, t, w, h, seed, kind) {
+  const R = mulberry(seed * 13);
+  g.save(); g.fillStyle = 'rgba(60,50,35,.16)'; g.filter = 'blur(14px)'; g.fillRect(-w / 2 + 12, -h / 2 + 16, w, h); g.restore();
+  g.fillStyle = kind === 'sticky' ? '#F0D9A4' : C.cream;
+  g.beginPath(); g.moveTo(-w / 2, -h / 2);
+  for (let x = -w / 2; x <= w / 2; x += 14) g.lineTo(x, -h / 2 + (kind === 'sticky' ? 0 : (R() - .5) * 10));
+  g.lineTo(w / 2, h / 2); g.lineTo(-w / 2, h / 2); g.closePath(); g.fill();
+  if (kind === 'note') for (let i = 0; i < 4; i++) ink(g, Array.from({ length: 14 }, (_, n) => [-w / 2 + 30 + n * (w - 70 - i * 30) / 13, -h / 2 + 50 + i * 38 + 4 * Math.sin(n * 1.3 + i)]), { seed: 40 + i, color: C.inkSoft, width: 2.5, alpha: .8 });
+  if (kind === 'cal') {
+    g.fillStyle = C.terra; g.globalAlpha *= .55; g.fillRect(-w / 2, -h / 2, w, 40); g.globalAlpha /= .55;
+    for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) inkRect(g, -w / 2 + 22 + c * 52, -h / 2 + 60 + r * 44, 40, 34, { seed: 50 + r * 4 + c, color: C.inkSoft, width: 1.6, alpha: .7, amp: .6 });
+  }
+  if (kind === 'sticky') text(g, '?', 0, 60, { font: 'Caveat', weight: 600, size: 170, color: C.ink, align: 'center' });
+  if (kind === 'note2') text(g, '3 a.m. again', 0, 14, { font: 'Caveat', weight: 500, size: 50, color: C.inkSoft, align: 'center', rot: -.04 });
+}
+function sScraps(t) {
+  const g = ctx; g.save(); paperBg(g); camera(g, seg(t, 6.2, 10.5), .035);
+  wash(g, 540, 1000, 480, C.blush, 20, .22, 12, 1.2);
+  const drift = seg(t, 6.2, 10.5);
+  SCRAPS.forEach(([x, y, w, h, rot, seed, kind], i) => {
+    const k = eback(seg(t, 6.45 + i * .18, 6.95 + i * .18)); if (k <= 0) return;
+    const dx = (x - 540) * .09 * drift, dy = (y - 960) * .06 * drift + Math.sin(t * .8 + i * 2) * 8;
+    wash(g, x + dx, y + dy, w * .8, C.sage, 60 + i, .35 * clamp(k), 10, .9);
+    g.save(); g.globalAlpha = clamp(k); g.translate(x + dx, y + dy); g.rotate(rot + Math.sin(t * .6 + seed) * .02 + drift * rot * .4);
+    g.scale(.85 + .15 * k, .85 + .15 * k); scrap(g, t, w, h, seed, kind); g.restore();
+  });
+  cap(g, 'Perimenopause can bring', 960, t, 6.6, 99, { size: 80, weight: 400, color: C.ink });
+  cap(g, 'changes that come and go.', 1055, t, 7.4, 99, { size: 80, italic: true, color: C.sageD });
+  g.restore();
+}
+
+// ---------- 4. 30-day grid (10.0–14.2) ----------
+const GX = 165, GY = 440, CELL = 125;
+function moonIcon(g, x, y, r, k) {
+  if (k <= 0) return;
+  g.save(); g.globalAlpha *= clamp(k); g.translate(x, y); g.scale(k, k);
+  g.beginPath(); g.arc(0, 0, r, 0, 6.28); g.arc(r * .45, -r * .3, r * .9, 0, 6.28); g.fillStyle = C.night2; g.fill('evenodd'); g.restore();
+}
+function sGrid(t) {
+  const g = ctx; g.save(); paperBg(g); camera(g, seg(t, 9.8, 14.7), .035, 540, 760);
+  wash(g, 900, 250, 260, C.sage, 12, .3, 10, .8);
+  wash(g, 200, 1350, 300, C.blush, 13, .3, 10, .8);
+  text(g, 'my 30 days', GX, GY - 40, { font: 'Caveat', weight: 500, size: 56, color: C.sageD, alpha: eo(seg(t, 10.2, 10.8)), rot: -.03 });
+  const gp = eo(seg(t, 10.1, 10.9));
+  inkRect(g, GX, GY, CELL * 6, CELL * 5, { seed: 30, width: 3, prog: gp, color: C.ink });
+  for (let c = 1; c < 6; c++) ink(g, [[GX + c * CELL, GY - 4], [GX + c * CELL, GY + CELL * 5 + 4]], { seed: 31 + c, width: 2, prog: eo(seg(t, 10.2 + c * .05, 10.9 + c * .05)), color: C.inkSoft, alpha: .7 });
+  for (let r = 1; r < 5; r++) ink(g, [[GX - 4, GY + r * CELL], [GX + CELL * 6 + 4, GY + r * CELL]], { seed: 40 + r, width: 2, prog: eo(seg(t, 10.3 + r * .06, 11.0 + r * .06)), color: C.inkSoft, alpha: .7 });
+  for (let i = 0; i < 30; i++) {
+    const cx = GX + (i % 6) * CELL + CELL / 2, cy = GY + Math.floor(i / 6) * CELL + CELL / 2;
+    text(g, String(i + 1), cx - CELL / 2 + 10, cy - CELL / 2 + 28, { font: 'Caveat', size: 26, color: C.inkSoft, alpha: .65 * gp });
+    const a = 10.6 + i * .06, k = eback(seg(t, a, a + .35));
+    if (MOON.has(i)) moonIcon(g, cx + 6, cy + 8, 26, k);
+    else if (k > 0) wash(g, cx + 6, cy + 8, 20 * k, DAYV[i] ? C.blush : C.sage, 200 + i, .95, 7);
+  }
+  inkEllipse(g, GX + 3 * CELL, GY + 2 * CELL, CELL * 1.3, CELL * 1.2, { seed: 60, color: C.terra, width: 4, prog: eo(seg(t, 12.85, 13.4)) });
+  inkEllipse(g, GX + 3.5 * CELL, GY + 4.5 * CELL, CELL * 1.85, CELL * .62, { seed: 61, color: C.terra, width: 4, prog: eo(seg(t, 13.2, 13.75)) });
+  text(g, 'every few weeks…?', GX + 6 * CELL, GY - 40, { font: 'Caveat', weight: 500, size: 46, color: C.terra, align: 'right', alpha: eo(seg(t, 13.5, 14.0)), rot: -.03 });
+  cap(g, 'Written down, day by day,', 1240, t, 10.3, 99, { size: 76, color: C.ink });
+  cap(g, 'a pattern can appear.', 1330, t, 11.6, 99, { size: 76, italic: true, color: C.sageD });
+  g.restore();
+}
+
+// ---------- 5. the book (14.2–19.8) ----------
+function sBook(t) {
+  const g = ctx; g.save(); paperBg(g); camera(g, seg(t, 14.0, 20.3), .03, 540, 700);
+  wash(g, 300, 900, 380, C.blush, 15, .4, 12, .8);
+  wash(g, 850, 280, 320, C.sage, 16, .3, 12, .8);
+  const k = eo(seg(t, 14.3, 15.2)), fl = Math.sin(t * 1.1) * 5;
+  const bx = 300, by = 230 + (1 - k) * 80 + fl;
+  drawBook(g, bx, by, 450, k, eo(seg(t, 14.8, 16.6)));
+  // gold glint across the cover title
+  const gl = seg(t, 15.3, 16.3);
+  if (gl > 0 && gl < 1) {
+    g.save(); g.beginPath(); g.rect(bx, by, 450, 450 * 1.414); g.clip(); g.globalCompositeOperation = 'screen';
+    const gx = bx - 200 + gl * 900, gr = g.createLinearGradient(gx - 120, by, gx + 120, by + 240);
+    gr.addColorStop(0, 'rgba(216,165,91,0)'); gr.addColorStop(.5, 'rgba(216,165,91,.45)'); gr.addColorStop(1, 'rgba(216,165,91,0)');
+    g.fillStyle = gr; g.fillRect(bx, by, 450, 640); g.restore();
+  }
+  // daily tracker page slides out from behind
+  const tk = eo(seg(t, 16.7, 17.4));
+  if (tk > 0) { g.save(); g.globalAlpha = tk; g.translate(560 + (1 - tk) * 300, 700); g.scale(.6, .6); g.rotate(.06); trackerCard(g, t, 0, 0, 17.0); g.restore(); }
+  cap(g, 'The Perimenopause', 1110, t, 14.5, 99, { size: 92, weight: 500, color: C.ink });
+  cap(g, 'Companion', 1200, t, 14.75, 99, { size: 92, italic: true, color: C.sageD });
+  cap(g, 'Guide + 30-day printable workbook', 1285, t, 16.4, 99, { size: 52, color: C.inkSoft });
+  // sources stamp
+  const sk = eback(seg(t, 17.7, 18.2));
+  if (sk > 0) {
+    g.save(); g.globalAlpha = clamp(sk); g.translate(CX, 1395); g.scale(.9 + .1 * sk, .9 + .1 * sk); g.rotate(-.015);
+    g.fillStyle = 'rgba(142,166,133,.22)'; g.beginPath(); g.roundRect(-390, -55, 780, 110, 22); g.fill();
+    inkRect(g, -384, -50, 768, 100, { seed: 95, color: C.sageD, width: 2, alpha: .7, amp: 1 });
+    text(g, 'Checked against', 0, -10, { font: 'Caveat', weight: 500, size: 36, color: C.sageD, align: 'center' });
+    const s = 'NICE · NHS · ACOG · The Menopause Society · NIH';
+    text(g, s, 0, 32, { size: fitSize(g, s, 'Fraunces', 500, false, 720, 30), weight: 500, color: C.ink, align: 'center' });
+    g.restore();
+  }
+  g.restore();
+}
+
+// ---------- 6. 30-day summary (19.8–23.5) ----------
+function sAppt(t) {
+  const g = ctx; g.save(); paperBg(g); camera(g, seg(t, 19.5, 24.0), .03, 540, 700);
+  wash(g, 700, 600, 460, C.sage, 22, .28, 12, 1.1);
+  wash(g, 250, 1300, 260, C.blush, 23, .35, 10, .8);
+  const k = eo(seg(t, 19.95, 20.8));
+  g.save(); g.translate(0, (1 - k) * 500); g.globalAlpha = k;
+  summaryCard(g, t, 150, 200, 20.4);
+  ink(g, [[612, 260], [628, 282], [668, 226]], { seed: 140, color: C.terra, width: 6, prog: eo(seg(t, 20.9, 21.3)), amp: .6 });
+  g.restore();
+  // calendar with the appointment ringed
+  const ck = eo(seg(t, 21.2, 21.8));
+  if (ck > 0) {
+    g.save(); g.globalAlpha = ck; g.translate(700, 780 + (1 - ck) * 60); g.rotate(-.06);
+    g.save(); g.fillStyle = 'rgba(60,50,35,.18)'; g.filter = 'blur(14px)'; g.fillRect(12, 16, 290, 250); g.restore();
+    g.fillStyle = C.cream; g.fillRect(0, 0, 290, 250);
+    g.fillStyle = C.sage; g.fillRect(0, 0, 290, 44);
+    text(g, 'NEXT MONTH', 145, 30, { size: 20, weight: 500, color: C.cream, align: 'center', spacing: 4 });
+    for (let r = 0; r < 4; r++) for (let c = 0; c < 6; c++) inkRect(g, 18 + c * 44, 60 + r * 46, 34, 36, { seed: 150 + r * 6 + c, color: C.inkSoft, width: 1.5, alpha: .6, amp: .5 });
+    inkEllipse(g, 18 + 3 * 44 + 17, 60 + 2 * 46 + 18, 30, 27, { seed: 175, color: C.terra, width: 4, prog: eo(seg(t, 21.8, 22.3)) });
+    g.restore();
+    text(g, 'appointment', 860, 1110, { font: 'Caveat', weight: 600, size: 50, color: C.terra, align: 'center', rot: -.05, alpha: eo(seg(t, 22.1, 22.6)) });
+  }
+  cap(g, 'A 30-Day Summary,', 1240, t, 20.0, 99, { size: 84, color: C.ink });
+  cap(g, 'ready for the appointment.', 1330, t, 21.0, 99, { size: 84, italic: true, color: C.sageD });
+  g.restore();
+}
+
+// ---------- 7. end card (23.5–27.5) ----------
+function sEnd(t) {
+  const g = ctx; g.save(); paperBg(g);
+  wash(g, 540, 700, 460, C.sage, 25, .26, 12, 1.1);
+  wash(g, 850, 1350, 260, C.blush, 26, .35, 10, .8);
+  wash(g, 220, 260, 200, C.gold, 27, .2, 10, .8);
+  text(g, 'SAGE & SEASON', CX + 5, 300, { size: 34, weight: 500, color: C.sageD, align: 'center', spacing: 10, alpha: eo(seg(t, 23.6, 24.2)) });
+  branch(g, 330, 345, 720, 340, 20, C.sageDD, C.sageD, 180, eo(seg(t, 23.7, 24.8)), .6, .9);
+  const k = eo(seg(t, 23.7, 24.5));
+  drawBook(g, 355, 420 + (1 - k) * 40 + Math.sin(t * 1.1) * 4, 340, clamp(k * 1.2), 1);
+  cap(g, 'The Perimenopause', 1040, t, 24.0, 99, { size: 84, weight: 500, color: C.ink });
+  cap(g, 'Companion', 1125, t, 24.15, 99, { size: 84, italic: true, color: C.sageD });
+  const pk = eback(seg(t, 24.6, 25.1));
+  if (pk > 0) {
+    g.save(); g.globalAlpha = clamp(pk); g.translate(CX, 1225); g.scale(.9 + .1 * pk, .9 + .1 * pk);
+    g.fillStyle = C.sageD; g.beginPath(); g.roundRect(-290, -50, 580, 100, 50); g.fill();
+    text(g, '$24  ·  Link in bio', 0, 16, { size: 48, weight: 500, color: C.cream, align: 'center' });
+    g.restore();
+  }
+  cap(g, 'General health education.', 1372, t, 23.8, 99, { size: 34, color: C.inkSoft, din: .5 });
+  cap(g, 'Not a substitute for medical advice.', 1420, t, 23.8, 99, { size: 34, color: C.inkSoft, din: .5 });
+  g.restore();
+}
+
+// ---------- master timeline ----------
+function renderAt(t) {
+  BOIL = Math.floor(t * 8);
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; ctx.filter = 'none';
+  if (t < 4.5) blobReveal(t, 2.85, 3.5, 540, 960, C.blush, sNight, sWords, 5);
+  else if (t < 8) blobReveal(t, 6.2, 6.85, 525, 1000, C.sage, sWords, sScraps, 9);
+  else if (t < 12) brushWipe(t, 9.8, 10.45, C.sage, sScraps, sGrid, 3);
+  else if (t < 17) blobReveal(t, 14.0, 14.65, GX + 3 * CELL, GY + 2.5 * CELL, C.sageD, sGrid, sBook, 11);
+  else if (t < 21.5) brushWipe(t, 19.6, 20.25, C.blush, sBook, sAppt, 7);
+  else if (t < 26.9) blobReveal(t, 23.3, 23.95, 525, 900, C.terra, sAppt, sEnd, 17);
+  // last 0.5 s wipes back to the opening frame so the clip loops
+  else blobReveal(t, 26.95, 27.5, 540, 965, C.night2, sEnd, () => sNight(0), 23);
+  // grain + vignette
+  ctx.save(); ctx.globalCompositeOperation = 'overlay'; ctx.globalAlpha = .07;
+  ctx.drawImage(GRAINS[Math.floor(t * 24) % GRAINS.length], 0, 0, W, H); ctx.restore();
+  const vg = ctx.createRadialGradient(W / 2, H / 2, W * .55, W / 2, H / 2, H * .75);
+  vg.addColorStop(0, 'rgba(60,45,30,0)'); vg.addColorStop(1, 'rgba(60,45,30,.16)');
+  ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
+}
+
+window.DURATION = DURATION;
+window.ready = (async () => {
+  await Promise.all([
+    document.fonts.load('300 40px Fraunces'), document.fonts.load('500 40px Fraunces'),
+    document.fonts.load('italic 300 40px Fraunces'), document.fonts.load('500 40px Caveat'), document.fonts.load('600 40px Caveat')
+  ]);
+  PAPER = makePaper(); GRAINS = [1, 2, 3, 4].map(makeGrain);
+  window.renderAt = renderAt; renderAt(+new URLSearchParams(location.search).get('t') || 0);
+  if (location.search.includes('play')) { const s = performance.now(); const loop = () => { renderAt(((performance.now() - s) / 1000) % DURATION); requestAnimationFrame(loop); }; loop(); }
+  return true;
+})();
+</script></body></html>
