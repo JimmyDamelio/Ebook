@@ -1,0 +1,180 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:'Fraunces';src:url(../three-am/fonts/fraunces.woff2) format('woff2');font-weight:100 900;font-style:normal}
+@font-face{font-family:'Fraunces';src:url(../three-am/fonts/fraunces-italic.woff2) format('woff2');font-weight:100 900;font-style:italic}
+@font-face{font-family:'Caveat';src:url(../three-am/fonts/caveat.woff2) format('woff2');font-weight:400 700}
+html,body{margin:0;background:#111}
+canvas{display:block;height:100vh;width:auto;margin:0 auto}
+</style></head>
+<body><canvas id="c" width="1080" height="1920"></canvas>
+<script src="../lib/brand.js"></script>
+<script src="words.js"></script>
+<script>
+// "3 things to write down before a perimenopause appointment" — 27.8 s, 9:16. Timings follow vo.json.
+const DURATION = 27.8;
+const SEC = { sym: 4.3, cyc: 10.1, q: 14.9, why: 19.2, cta: 22.35 };
+const DONE = { sym: 9.6, cyc: 14.55, q: 18.6 };
+const PX = 100, PY = 210, PW = 880, PH = 950, PROT = -.015;
+
+function notebookPage(g, w, h, tab) {
+  g.save(); g.fillStyle = 'rgba(60,50,35,.2)'; g.filter = 'blur(22px)'; g.fillRect(14, 24, w, h); g.restore();
+  g.fillStyle = C.cream; g.fillRect(0, 0, w, h);
+  g.strokeStyle = 'rgba(92,118,88,.16)'; g.lineWidth = 2;
+  for (let y = 150; y < h - 30; y += 64) { g.beginPath(); g.moveTo(40, y); g.lineTo(w - 40, y); g.stroke(); }
+  g.strokeStyle = 'rgba(199,123,92,.3)'; g.beginPath(); g.moveTo(100, 0); g.lineTo(100, h); g.stroke();
+  for (let i = 0; i < 9; i++) { g.fillStyle = 'rgba(60,50,35,.16)'; g.beginPath(); g.arc(70 + i * (w - 140) / 8, 28, 9, 0, 6.28); g.fill(); }
+  if (tab) text(g, tab, w - 50, 92, { font: 'Caveat', weight: 600, size: 40, color: C.sageD, align: 'right', rot: -.03 });
+}
+
+const ROWS = [['Symptoms', 'sym'], ['Cycle', 'cyc'], ['Questions', 'q']];
+function checklist(g, t) {
+  ROWS.forEach(([label, key], i) => {
+    const y = 215 + i * 88, start = SEC[key], done = DONE[key];
+    const active = t >= start - .1 && t < done + .3;
+    const hl = Math.min(eo(seg(t, start - .1, start + .4)), 1 - eio(seg(t, done + .1, done + .6)));
+    if (hl > 0) wash(g, 420, y - 18, 330, C.blush, 300 + i, .55 * hl, 10, .22);
+    g.save(); g.globalAlpha *= .9; g.strokeStyle = C.sageD; g.lineWidth = 3; g.beginPath(); g.arc(165, y - 18, 32, 0, 6.28); g.stroke(); g.restore();
+    text(g, String(i + 1), 165, y - 4, { size: 42, weight: 500, color: C.sageD, align: 'center' });
+    text(g, label, 225, y, { size: 58, weight: 400, color: C.ink, alpha: t < start ? .22 : 0 });
+    writeText(g, label, 225, y, t, start, .55, { font: 'Fraunces', size: 58, weight: 400, color: C.ink, pen: false });
+    if (t >= done) tick(g, 700, y - 14, 1.3, eo(seg(t, done, done + .3)), C.terra, 400 + i);
+    void active;
+  });
+  ink(g, [[60, 470], [PW - 60, 472]], { seed: 9, color: C.inkSoft, width: 2.5, alpha: .5 });
+}
+
+function dHook(g, t) {
+  const out = 1 - eio(seg(t, 3.9, 4.35)); if (out <= 0) return;
+  g.save(); g.globalAlpha *= out;
+  const pulse = 1 + .04 * Math.sin(t * 3);
+  wash(g, 250, 640, 120 * pulse, C.blush, 21, .8, 10);
+  text(g, '3', 250, 700, { size: 190, weight: 400, color: C.terra, align: 'center' });
+  text(g, 'things to', 360, 640, { size: 76, weight: 300, color: C.ink });
+  text(g, 'write down', 360, 724, { size: 76, weight: 300, italic: true, color: C.sageD });
+  writeText(g, 'before a perimenopause appointment', PW / 2, 860, t, 1.5, 1.4, { size: 54, color: C.inkSoft, align: 'center' });
+  g.restore();
+}
+
+const SYM = [['sleep', 4, 3], ['night sweats', 2, 4], ['mood', 3, 2]];
+function dSymptoms(g, t) {
+  const k = Math.min(eo(seg(t, SEC.sym + .2, SEC.sym + .7)), 1 - eio(seg(t, SEC.cyc - .35, SEC.cyc)));
+  if (k <= 0) return;
+  g.save(); g.globalAlpha *= k;
+  text(g, 'how often', 490, 545, { font: 'Caveat', size: 40, color: C.inkSoft, align: 'center', alpha: eo(seg(t, 5.85, 6.3)) });
+  text(g, 'impact', 720, 545, { font: 'Caveat', size: 40, color: C.inkSoft, align: 'center', alpha: eo(seg(t, 7.3, 7.7)) });
+  SYM.forEach(([lab, often, impact], r) => {
+    const y = 650 + r * 105;
+    writeText(g, lab, 135, y, t, 5.9 + r * .4, .45, { size: 52, color: C.ink });
+    for (let i = 0; i < often; i++) {
+      const a = 6.45 + r * .22 + i * .08;
+      ink(g, [[450 + i * 24, y - 44], [454 + i * 24, y + 2]], { seed: 500 + r * 9 + i, width: 4, color: C.sageDD, prog: eo(seg(t, a, a + .12)) });
+    }
+    for (let i = 0; i < 5; i++) {
+      const cx = 640 + i * 42, cy = y - 18, a = 7.5 + r * .35 + i * .07;
+      g.save(); g.strokeStyle = C.inkSoft; g.lineWidth = 2.5; g.globalAlpha *= .7; g.beginPath(); g.arc(cx, cy, 14, 0, 6.28); g.stroke(); g.restore();
+      if (i < impact) { const f = eback(seg(t, a, a + .25)); if (f > 0) { g.fillStyle = C.terra; g.beginPath(); g.arc(cx, cy, 13 * f, 0, 6.28); g.fill(); } }
+    }
+  });
+  g.restore();
+}
+
+const PERIODS = [[170, 'Mar 2', 'lighter'], [470, 'Apr 8', 'heavier'], [650, 'May 1', '']];
+function dCycle(g, t) {
+  const k = Math.min(eo(seg(t, SEC.cyc + .2, SEC.cyc + .7)), 1 - eio(seg(t, SEC.q - .35, SEC.q)));
+  if (k <= 0) return;
+  g.save(); g.globalAlpha *= k;
+  ink(g, [[120, 720], [780, 722]], { seed: 600, width: 3, color: C.ink, prog: eo(seg(t, 10.4, 11.2)) });
+  PERIODS.forEach(([x, date, flow], i) => {
+    const a = 11.6 + i * .3, f = eback(seg(t, a, a + .35));
+    if (f > 0) wash(g, x, 720, 34 * f, C.terra, 610 + i, .9, 8);
+    writeText(g, date, x, 650, t, a + .05, .35, { size: 50, color: C.ink, align: 'center' });
+    if (flow) writeText(g, flow, x, 805, t, 13.45 + i * .25, .4, { size: 42, color: C.sageD, align: 'center' });
+  });
+  [[170, 470, '37 days'], [470, 650, '23 days']].forEach(([x0, x1, lab], i) => {
+    const a = 12.5 + i * .35;
+    ink(g, curve(x0 + 20, 690, (x0 + x1) / 2, 590, x1 - 20, 690, 30), { seed: 620 + i, width: 3, color: C.terra, prog: eo(seg(t, a, a + .4)), alpha: .85 });
+    text(g, lab, (x0 + x1) / 2, 585, { font: 'Caveat', weight: 600, size: 44, color: C.terra, align: 'center', alpha: eo(seg(t, a + .25, a + .55)) });
+  });
+  g.restore();
+}
+
+const QS = [['What could explain these changes?', 15.5, .75], ['Which options suit me?', 16.35, .55], ['Leave with: a clear next step', 17.05, .8]];
+function dQuestions(g, t) {
+  const k = eo(seg(t, SEC.q + .2, SEC.q + .7)); if (k <= 0) return;
+  g.save(); g.globalAlpha *= k;
+  QS.forEach(([q, a, d], i) => {
+    const y = 590 + i * 112;
+    inkRect(g, 130, y - 34, 34, 34, { seed: 700 + i, width: 2.5, color: C.inkSoft, amp: .7, alpha: eo(seg(t, a - .3, a)) });
+    writeText(g, q, 190, y, t, a, d, { size: i === 2 ? 52 : 50, color: i === 2 ? C.sageDD : C.ink, weight: i === 2 ? 600 : 500 });
+  });
+  g.restore();
+}
+
+function sMain(t) {
+  const g = ctx; g.save(); paperBg(g);
+  wash(g, 900, 250, 280, C.sage, 12, .28, 10, .8);
+  wash(g, 160, 1300, 320, C.blush, 13, .3, 10, .8);
+  // camera: slow push in, then pull back to show weeks of pages
+  const back = eio(seg(t, SEC.why, SEC.why + 1.2));
+  const s = 1 + .035 * seg(t, 0, SEC.why) - .13 * back;
+  g.translate(540, 700); g.scale(s, s); g.translate(-540, -700);
+  // earlier weeks behind
+  [[-.07, 'week 1', 0], [-.035, 'week 2', .15]].forEach(([r, tab, d]) => {
+    const k = eo(seg(t, SEC.why + .3 + d, SEC.why + 1.1 + d)); if (k <= 0) return;
+    g.save(); g.globalAlpha *= k; g.translate(PX + PW / 2 - 60 * (1 - k), PY + PH / 2 + 10); g.rotate(r * k + PROT); g.translate(-PW / 2, -PH / 2);
+    notebookPage(g, PW, PH, tab); g.restore();
+  });
+  g.save(); g.translate(PX + PW / 2, PY + PH / 2); g.rotate(PROT); g.translate(-PW / 2, -PH / 2);
+  notebookPage(g, PW, PH, t > SEC.why + .3 ? 'week 3' : '');
+  text(g, 'Before the appointment', 130, 120, { font: 'Caveat', weight: 600, size: 52, color: C.sageD, rot: -.01 });
+  checklist(g, t);
+  dHook(g, t); dSymptoms(g, t); dCycle(g, t); dQuestions(g, t);
+  g.restore();
+  g.restore();
+}
+
+function sEnd(t) {
+  const g = ctx; g.save(); paperBg(g);
+  wash(g, 540, 640, 460, C.sage, 25, .26, 12, 1.1);
+  wash(g, 850, 1150, 260, C.blush, 26, .35, 10, .8);
+  text(g, 'SAGE & SEASON', CX + 5, 290, { size: 34, weight: 500, color: C.sageD, align: 'center', spacing: 10, alpha: eo(seg(t, 22.5, 23.1)) });
+  branch(g, 330, 335, 720, 330, 20, C.sageDD, C.sageD, 180, eo(seg(t, 22.6, 23.6)), .6, .9);
+  const k = eback(seg(t, 22.45, 23.1));
+  if (k > 0) {
+    g.save(); g.globalAlpha = clamp(k); g.translate(540, 720 + (1 - k) * 80); g.rotate(.02); g.scale(.92 + .08 * k, .92 + .08 * k); g.translate(-290, -330);
+    g.save(); g.fillStyle = 'rgba(60,50,35,.2)'; g.filter = 'blur(20px)'; g.fillRect(14, 22, 580, 660); g.restore();
+    g.fillStyle = C.cream; g.fillRect(0, 0, 580, 660);
+    g.fillStyle = C.sageD; g.fillRect(0, 0, 580, 120);
+    text(g, 'Before Your Appointment', 290, 72, { size: 44, weight: 500, color: C.cream, align: 'center' });
+    text(g, 'free printable checklist', 290, 175, { font: 'Caveat', weight: 600, size: 44, color: C.terra, align: 'center' });
+    ['Symptoms & how often', 'Your cycle dates', 'What affects daily life', 'Questions to ask', 'What to leave with'].forEach((s, i) => {
+      const y = 265 + i * 76;
+      inkRect(g, 50, y - 30, 32, 32, { seed: 800 + i, width: 2.5, color: C.inkSoft, amp: .6 });
+      if (i < 3) tick(g, 52, y - 16, .75, eo(seg(t, 23.4 + i * .3, 23.65 + i * .3)), C.terra, 820 + i);
+      text(g, s, 105, y, { size: 34, weight: 300, color: C.ink });
+    });
+    g.restore();
+  }
+  const pk = eback(seg(t, 25.05, 25.5));
+  if (pk > 0) {
+    g.save(); g.globalAlpha = clamp(pk); g.translate(CX, 1135); g.scale(.9 + .1 * pk, .9 + .1 * pk);
+    g.fillStyle = C.sageD; g.beginPath(); g.roundRect(-270, -50, 540, 100, 50); g.fill();
+    text(g, 'Free  ·  Link in bio', 0, 16, { size: 48, weight: 500, color: C.cream, align: 'center' });
+    g.restore();
+  }
+  cap(g, 'General health education.', 1448, t, 22.6, 99, { size: 32, color: C.inkSoft, din: .5 });
+  cap(g, 'Not a substitute for medical advice.', 1488, t, 22.6, 99, { size: 32, color: C.inkSoft, din: .5 });
+  g.restore();
+}
+
+function renderAt(t) {
+  BOIL = Math.floor(t * 8);
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; ctx.filter = 'none';
+  if (t < 27.2) blobReveal(t, 22.0, 22.65, 540, 700, C.sage, sMain, sEnd, 17);
+  else blobReveal(t, 27.25, 27.8, 540, 700, C.sageD, sEnd, () => sMain(0), 23);
+  karaoke(ctx, t, { y: 1310, size: 72 });
+  finish(t);
+}
+boot(renderAt, DURATION);
+</script></body></html>

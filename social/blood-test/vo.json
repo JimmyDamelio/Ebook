@@ -1,0 +1,45 @@
+{
+ "voice": "af_heart",
+ "speed": 0.9,
+ "show": {
+  "forty-five": "45",
+  "thirty": "30"
+ },
+ "clips": [
+  {
+   "key": "hook",
+   "text": "Why one blood test may not settle perimenopause.",
+   "at": 0.15
+  },
+  {
+   "key": "wave",
+   "text": "During perimenopause, hormone levels go up and down.",
+   "at": 3.7
+  },
+  {
+   "key": "moment",
+   "text": "One test is a single moment.",
+   "at": 7.25
+  },
+  {
+   "key": "nice",
+   "text": "UK NICE guidance: for otherwise healthy women over forty-five, it can be diagnosed from symptoms and period changes.",
+   "at": 9.7
+  },
+  {
+   "key": "other",
+   "text": "Other tests may still be needed, to check for other causes.",
+   "at": 18.5
+  },
+  {
+   "key": "record",
+   "text": "So a clear record of symptoms and cycles matters.",
+   "at": 22.35
+  },
+  {
+   "key": "cta",
+   "text": "The Perimenopause Companion helps you build one. Link in bio.",
+   "at": 25.75
+  }
+ ]
+}

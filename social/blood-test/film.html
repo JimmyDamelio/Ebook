@@ -1,0 +1,185 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:'Fraunces';src:url(../three-am/fonts/fraunces.woff2) format('woff2');font-weight:100 900;font-style:normal}
+@font-face{font-family:'Fraunces';src:url(../three-am/fonts/fraunces-italic.woff2) format('woff2');font-weight:100 900;font-style:italic}
+@font-face{font-family:'Caveat';src:url(../three-am/fonts/caveat.woff2) format('woff2');font-weight:400 700}
+html,body{margin:0;background:#111}
+canvas{display:block;height:100vh;width:auto;margin:0 auto}
+</style></head>
+<body><canvas id="c" width="1080" height="1920"></canvas>
+<script src="../lib/brand.js"></script>
+<script src="words.js"></script>
+<script>
+// "Why one blood test may not settle perimenopause" — 31 s, 9:16. Source: NICE NG23 (1.2), NICE QS143. Timings follow vo.json.
+const DURATION = 31.0;
+
+function card(g, x, y, w, h, rot = 0) {
+  g.translate(x + w / 2, y + h / 2); g.rotate(rot); g.translate(-w / 2, -h / 2);
+  g.save(); g.fillStyle = 'rgba(60,50,35,.2)'; g.filter = 'blur(22px)'; g.fillRect(14, 24, w, h); g.restore();
+  g.fillStyle = C.cream; g.fillRect(0, 0, w, h);
+}
+function vial(g, x, y, s, t, fill = .62) {
+  g.save(); g.translate(x, y); g.scale(s, s); g.rotate(.12);
+  g.save(); g.fillStyle = 'rgba(60,50,35,.18)'; g.filter = 'blur(18px)'; g.fillRect(-70, 40, 170, 520); g.restore();
+  g.save(); g.beginPath(); g.roundRect(-70, 0, 140, 520, [0, 0, 70, 70]); g.clip();
+  g.fillStyle = 'rgba(251,246,236,.9)'; g.fillRect(-70, 0, 140, 520);
+  const lvl = 520 - 520 * fill, sl = Math.sin(t * 2.2) * 8;
+  g.beginPath(); g.moveTo(-70, lvl + sl); g.quadraticCurveTo(0, lvl - sl, 70, lvl + sl * .3); g.lineTo(70, 520); g.lineTo(-70, 520); g.closePath();
+  g.fillStyle = C.terra; g.globalAlpha *= .75; g.fill(); g.globalAlpha /= .75;
+  wash(g, 0, 470, 90, '#B0613F', 31, .6, 8, 1.2);
+  g.fillStyle = 'rgba(255,255,255,.35)'; g.fillRect(-48, 20, 16, 470);
+  g.restore();
+  ink(g, [[-70, 0], [-70, 450], ...Array.from({ length: 21 }, (_, i) => [Math.cos(Math.PI - i / 20 * Math.PI) * 70, 450 + Math.sin(i / 20 * Math.PI) * 70]), [70, 450], [70, 0]], { seed: 32, width: 4, color: C.ink, alpha: .8 });
+  g.fillStyle = C.sageD; g.beginPath(); g.roundRect(-84, -70, 168, 80, 14); g.fill();
+  g.fillStyle = C.cream; g.fillRect(-60, 130, 120, 150);
+  text(g, 'blood', 0, 190, { font: 'Caveat', weight: 600, size: 44, color: C.ink, align: 'center' });
+  text(g, 'test', 0, 240, { font: 'Caveat', weight: 600, size: 44, color: C.ink, align: 'center' });
+  g.restore();
+}
+
+// ---------- 1. hook (0–3.6) ----------
+function sHook(t) {
+  const g = ctx; g.save(); paperBg(g); camera(g, seg(t, 0, 4), .04, 540, 700);
+  wash(g, 540, 760, 420, C.blush, 7, .3, 12, 1.1);
+  wash(g, 880, 300, 220, C.sage, 8, .3, 10, .8);
+  // a faint up-and-down line behind: the idea of the next scene
+  ink(g, Array.from({ length: 60 }, (_, i) => [90 + i * 15.5, 900 - wave(i / 59) * 160]), { seed: 33, color: C.sage, width: 5, alpha: .45 });
+  vial(g, 560, 520, 1, t);
+  text(g, 'One blood test', CX, 320, { size: fitSize(g, 'One blood test', 'Fraunces', 500, false, 800, 104), weight: 500, color: C.ink, align: 'center' });
+  text(g, 'may not settle it', CX, 425, { size: 84, weight: 300, italic: true, color: C.sageD, align: 'center' });
+  g.restore();
+}
+
+// ---------- 2. up and down (3.6–9.6) ----------
+function wave(u) { return .5 + .28 * Math.sin(u * 11.5 + .6) + .14 * Math.sin(u * 23 + 2) + .06 * Math.sin(u * 47); }
+const GX0 = 150, GX1 = 900, GY0 = 520, GY1 = 980;
+const gx = u => GX0 + (GX1 - GX0) * u, gy = u => GY1 - 40 - wave(u) * (GY1 - GY0 - 80);
+function sWave(t) {
+  const g = ctx; g.save(); paperBg(g); camera(g, seg(t, 3.4, 9.8), .035, 540, 700);
+  wash(g, 200, 1250, 300, C.blush, 13, .3, 10, .8);
+  g.save(); card(g, 100, 330, 880, 760, -.01);
+  text(g, 'hormone levels', 60, 100, { font: 'Caveat', weight: 600, size: 58, color: C.sageD });
+  text(g, 'over 30 days', 60, 160, { font: 'Caveat', size: 46, color: C.inkSoft });
+  g.restore();
+  ink(g, [[GX0 - 20, GY1], [GX1 + 20, GY1]], { seed: 40, width: 3, color: C.inkSoft, prog: eo(seg(t, 3.8, 4.4)) });
+  const p = eio(seg(t, 4.2, 6.9));
+  ink(g, Array.from({ length: 90 }, (_, i) => [gx(i / 89), gy(i / 89)]), { seed: 41, color: C.sageD, width: 7, prog: p, amp: 1 });
+  // one test = one moment
+  [[.23, 7.35, 'test day', C.terra], [.56, 8.3, 'another day?', C.inkSoft]].forEach(([u, a, lab, col], i) => {
+    const k = eo(seg(t, a, a + .35)); if (k <= 0) return;
+    g.save(); g.setLineDash([10, 12]); g.strokeStyle = col; g.lineWidth = 3; g.globalAlpha *= k;
+    g.beginPath(); g.moveTo(gx(u), GY1); g.lineTo(gx(u), GY1 - (GY1 - gy(u)) * k); g.stroke(); g.restore();
+    const f = eback(seg(t, a + .2, a + .5));
+    if (f > 0) { g.fillStyle = col; g.beginPath(); g.arc(gx(u), gy(u), 18 * f, 0, 6.28); g.fill(); g.strokeStyle = C.cream; g.lineWidth = 4; g.stroke(); }
+    const la = eo(seg(t, a + .3, a + .6));
+    if (la > 0) { g.save(); g.globalAlpha *= la * .9; g.fillStyle = C.cream; g.font = '600 50px Caveat'; const lw = g.measureText(lab).width + 28; g.beginPath(); g.roundRect(gx(u) - lw / 2, gy(u) - 116, lw, 62, 20); g.fill(); g.restore(); }
+    text(g, lab, gx(u), gy(u) - 70, { font: 'Caveat', weight: 600, size: 50, color: col, align: 'center', alpha: la });
+  });
+  g.restore();
+}
+
+// ---------- 3. NICE (9.6–18.4) ----------
+function chip(g, x, y, label, k, icon) {
+  if (k <= 0) return;
+  g.save(); g.globalAlpha *= clamp(k); g.translate(x, y); g.scale(.85 + .15 * k, .85 + .15 * k);
+  g.font = '500 54px Fraunces'; const w = g.measureText(label).width + 130;
+  g.fillStyle = 'rgba(142,166,133,.28)'; g.beginPath(); g.roundRect(-w / 2, -50, w, 100, 50); g.fill();
+  inkRect(g, -w / 2 + 6, -46, w - 12, 92, { seed: 900 + label.length, width: 2.5, color: C.sageD, alpha: .6, amp: 1 });
+  if (icon === 'wave') ink(g, Array.from({ length: 14 }, (_, i) => [-w / 2 + 34 + i * 4, 18 * Math.sin(i * .9)]), { seed: 910, width: 4, color: C.terra, step: 3 });
+  else { inkRect(g, -w / 2 + 34, -20, 46, 40, { seed: 911, width: 3, color: C.terra, amp: .6 }); g.fillStyle = C.terra; g.fillRect(-w / 2 + 34, -20, 46, 10); }
+  text(g, label, 40, 18, { size: 54, weight: 500, color: C.ink, align: 'center' });
+  g.restore();
+}
+function sNice(t) {
+  const g = ctx; g.save(); paperBg(g); camera(g, seg(t, 9.4, 18.6), .03, 540, 700);
+  wash(g, 880, 260, 260, C.sage, 16, .3, 10, .8);
+  wash(g, 200, 1250, 300, C.blush, 17, .3, 10, .8);
+  g.save(); card(g, 100, 250, 880, 920, .008);
+  g.fillStyle = C.sageD; g.fillRect(0, 0, 880, 130);
+  text(g, 'NICE guidance · UK', 440, 84, { size: 54, weight: 500, color: C.cream, align: 'center' });
+  const k45 = eback(seg(t, 13.1, 13.6));
+  if (k45 > 0) { g.save(); g.globalAlpha *= clamp(k45); wash(g, 230, 300, 120, C.blush, 18, .7, 10); text(g, '45+', 230, 350, { size: 150, weight: 400, color: C.terra, align: 'center' }); g.restore(); }
+  writeText(g, 'otherwise healthy', 400, 285, t, 11.75, .7, { size: 58, weight: 600, color: C.ink });
+  writeText(g, 'women over 45', 400, 360, t, 12.55, .7, { size: 52, color: C.inkSoft });
+  text(g, 'can be diagnosed from', 440, 520, { size: 56, weight: 300, italic: true, color: C.ink, align: 'center', alpha: eo(seg(t, 14.5, 15.0)), rise: (1 - eo(seg(t, 14.5, 15.0))) * 20 });
+  chip(g, 440, 640, 'symptoms', eback(seg(t, 15.85, 16.3)), 'wave');
+  text(g, '+', 440, 742, { size: 64, weight: 300, color: C.inkSoft, align: 'center', alpha: eo(seg(t, 16.4, 16.7)) });
+  chip(g, 440, 820, 'period changes', eback(seg(t, 16.85, 17.3)), 'cal');
+  text(g, 'Source: NICE guideline NG23', 440, 890, { size: 32, weight: 300, color: C.inkSoft, align: 'center', alpha: eo(seg(t, 10.2, 10.8)) });
+  g.restore();
+  g.restore();
+}
+
+// ---------- 4. other tests (18.4–22.2) ----------
+function sOther(t) {
+  const g = ctx; g.save(); paperBg(g); camera(g, seg(t, 18.2, 22.6), .03, 540, 700);
+  wash(g, 540, 700, 420, C.sage, 19, .25, 12, 1.1);
+  // magnifying glass over a short list
+  g.save(); card(g, 150, 330, 780, 700, -.015);
+  text(g, 'Other tests', 60, 110, { font: 'Caveat', weight: 600, size: 64, color: C.sageD });
+  text(g, 'can check other causes, e.g.', 60, 190, { size: 46, weight: 300, italic: true, color: C.ink, alpha: eo(seg(t, 20.5, 21.0)) });
+  writeText(g, 'thyroid function', 110, 330, t, 20.9, .6, { size: 64, color: C.ink });
+  writeText(g, 'blood count', 110, 450, t, 21.4, .5, { size: 64, color: C.ink });
+  text(g, 'Source: NICE quality standard QS143', 390, 650, { size: 32, weight: 300, color: C.inkSoft, align: 'center', alpha: eo(seg(t, 18.8, 19.4)) });
+  [[300], [420]].forEach(([y], i) => { g.fillStyle = C.terra; g.beginPath(); g.arc(75, y + 8, 9 * eback(seg(t, 20.9 + i * .5, 21.2 + i * .5)), 0, 6.28); g.fill(); });
+  g.restore();
+  const mk = eo(seg(t, 18.6, 19.4)), mx = 800 - 30 * Math.sin(t * .9), my = 700 + 20 * Math.cos(t * 1.1);
+  if (mk > 0) {
+    g.save(); g.globalAlpha *= mk; g.translate(mx, my); g.rotate(-.5);
+    g.fillStyle = 'rgba(251,246,236,.35)'; g.beginPath(); g.arc(0, 0, 110, 0, 6.28); g.fill();
+    g.strokeStyle = C.ink; g.lineWidth = 12; g.beginPath(); g.arc(0, 0, 110, 0, 6.28); g.stroke();
+    g.fillStyle = C.sageDD; g.beginPath(); g.roundRect(110, -22, 190, 44, 22); g.fill();
+    g.restore();
+  }
+  g.restore();
+}
+
+// ---------- 5. a clear record (22.2–25.6) ----------
+function sRecord(t) {
+  const g = ctx; g.save(); paperBg(g); camera(g, seg(t, 22.0, 26.0), .03, 540, 700);
+  wash(g, 300, 600, 380, C.blush, 20, .3, 12, 1.1);
+  wash(g, 880, 1000, 300, C.sage, 21, .3, 10, .8);
+  const k = eo(seg(t, 22.3, 23.0));
+  g.save(); g.globalAlpha *= k; g.translate(100, 330 + (1 - k) * 60); g.scale(1.3, 1.3); trackerCard(g, t, 0, 0, 22.7); g.restore();
+  text(g, 'symptoms + cycles, written down', CX, 1060, { font: 'Caveat', weight: 600, size: 58, color: C.terra, align: 'center', alpha: eo(seg(t, 23.8, 24.4)), rot: -.02 });
+  g.restore();
+}
+
+// ---------- 6. end card (25.6–31) ----------
+function sEnd(t) {
+  const g = ctx; g.save(); paperBg(g);
+  wash(g, 540, 640, 460, C.sage, 25, .26, 12, 1.1);
+  wash(g, 850, 1150, 260, C.blush, 26, .35, 10, .8);
+  text(g, 'SAGE & SEASON', CX + 5, 290, { size: 34, weight: 500, color: C.sageD, align: 'center', spacing: 10, alpha: eo(seg(t, 25.8, 26.4)) });
+  branch(g, 330, 335, 720, 330, 20, C.sageDD, C.sageD, 180, eo(seg(t, 25.9, 26.9)), .6, .9);
+  const sk = eo(seg(t, 26.6, 27.4));
+  if (sk > 0) { g.save(); g.globalAlpha *= sk; g.translate(560 + (1 - sk) * 200, 470); g.scale(.62, .62); summaryCard(g, t, 0, 0, 26.9); g.restore(); }
+  const k = eo(seg(t, 25.85, 26.6));
+  drawBook(g, 170, 420 + (1 - k) * 40 + Math.sin(t * 1.1) * 4, 400, clamp(k * 1.2), 1);
+  const pk = eback(seg(t, 28.8, 29.25));
+  if (pk > 0) {
+    g.save(); g.globalAlpha = clamp(pk); g.translate(CX, 1100); g.scale(.9 + .1 * pk, .9 + .1 * pk);
+    g.fillStyle = C.sageD; g.beginPath(); g.roundRect(-290, -50, 580, 100, 50); g.fill();
+    text(g, '$24  ·  Link in bio', 0, 16, { size: 48, weight: 500, color: C.cream, align: 'center' });
+    g.restore();
+  }
+  cap(g, 'General health education.', 1448, t, 25.9, 99, { size: 32, color: C.inkSoft, din: .5 });
+  cap(g, 'Not a substitute for medical advice.', 1488, t, 25.9, 99, { size: 32, color: C.inkSoft, din: .5 });
+  g.restore();
+}
+
+function renderAt(t) {
+  BOIL = Math.floor(t * 8);
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; ctx.filter = 'none';
+  if (t < 5) blobReveal(t, 3.35, 3.95, 560, 800, C.blush, sHook, sWave, 5);
+  else if (t < 12) brushWipe(t, 9.35, 9.95, C.sage, sWave, sNice, 3);
+  else if (t < 20) blobReveal(t, 18.15, 18.75, 540, 700, C.sageD, sNice, sOther, 11);
+  else if (t < 24) brushWipe(t, 21.95, 22.55, C.blush, sOther, sRecord, 7);
+  else if (t < 30.4) blobReveal(t, 25.35, 25.95, 540, 700, C.terra, sRecord, sEnd, 17);
+  else blobReveal(t, 30.45, 31.0, 560, 800, C.sageD, sEnd, () => sHook(0), 23);
+  karaoke(ctx, t, { y: 1310, size: 72 });
+  finish(t);
+}
+boot(renderAt, DURATION);
+</script></body></html>

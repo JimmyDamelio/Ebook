@@ -1,0 +1,51 @@
+{
+ "voice": "af_heart",
+ "speed": 0.9,
+ "clips": [
+  {
+   "key": "hook",
+   "text": "Three things to write down before a perimenopause appointment.",
+   "at": 0.15
+  },
+  {
+   "key": "one",
+   "text": "One. The symptoms.",
+   "at": 4.3
+  },
+  {
+   "key": "one_b",
+   "text": "How often they happen, and how much they affect daily life.",
+   "at": 5.85
+  },
+  {
+   "key": "two",
+   "text": "Two. The cycle.",
+   "at": 10.1
+  },
+  {
+   "key": "two_b",
+   "text": "The dates, and any changes in timing or flow.",
+   "at": 11.6
+  },
+  {
+   "key": "three",
+   "text": "Three. The questions.",
+   "at": 14.9
+  },
+  {
+   "key": "three_b",
+   "text": "And what you'd like to leave the room with.",
+   "at": 16.45
+  },
+  {
+   "key": "why",
+   "text": "A few weeks of notes can say more than memory.",
+   "at": 19.2
+  },
+  {
+   "key": "cta",
+   "text": "Get the free checklist from Sage and Season. Link in bio.",
+   "at": 22.5
+  }
+ ]
+}
