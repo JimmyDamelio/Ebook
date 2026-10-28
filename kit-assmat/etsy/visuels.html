@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Visuels Etsy — Kit Assmat</title>
+<link rel="stylesheet" href="../assets/fonts/local.css">
+<style>
+  :root { --teal:#1F4D4A; --teal2:#2F6B66; --terra:#C8643F; --cream:#FBF7F1; --sage:#DCEAE4; --sage2:#F1F7F4;
+          --ink:#1F2A2B; --grey:#6E7C7B; --apricot:#F7DCCB; --butter:#FFF6DE; }
+  * { box-sizing: border-box; margin: 0; }
+  body { background: #ccc; font-family: Inter, sans-serif; color: var(--ink); }
+  .slide { width: 1200px; height: 900px; position: relative; overflow: hidden; background: var(--cream); margin-bottom: 20px; }
+  .brand { font: 600 13px Inter; letter-spacing: .22em; color: var(--terra); text-transform: uppercase; }
+  h1, h2 { font-family: Fraunces, Georgia, serif; color: var(--teal); font-weight: 600; letter-spacing: -.015em; }
+  h1 { font-size: 64px; line-height: 1.02; }
+  h2 { font-size: 50px; line-height: 1.06; }
+  .sub { font-size: 22px; color: #3c4a4a; line-height: 1.4; }
+  .pill { display: inline-flex; align-items: center; gap: 8px; background: white; border: 1.5px solid var(--sage);
+          border-radius: 999px; padding: 9px 18px; font: 600 16px Inter; color: var(--teal); }
+  .pill i { width: 9px; height: 9px; border-radius: 50%; background: var(--terra); display: inline-block; }
+  .shot { border-radius: 14px; border: 1px solid #d3deda; box-shadow: 0 30px 60px rgba(31,77,74,.22); background: white; }
+  .blob { position: absolute; border-radius: 50%; }
+  .tag { position: absolute; background: var(--terra); color: white; font: 700 15px Inter; letter-spacing: .08em;
+         text-transform: uppercase; padding: 10px 18px; border-radius: 8px; }
+  .callout { position: absolute; background: white; border-radius: 14px; padding: 16px 20px; box-shadow: 0 14px 30px rgba(31,77,74,.18);
+             font-size: 18px; line-height: 1.35; border-left: 6px solid var(--terra); }
+  .callout b { color: var(--teal); }
+  .check { display: flex; gap: 14px; align-items: flex-start; font-size: 21px; line-height: 1.35; margin-bottom: 16px; }
+  .check::before { content: "✓"; flex: none; width: 34px; height: 34px; border-radius: 50%; background: var(--teal); color: white;
+                   display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; }
+  .num { font-family: Fraunces, serif; color: var(--terra); font-weight: 600; }
+  .card { background: white; border-radius: 18px; padding: 24px; box-shadow: 0 16px 36px rgba(31,77,74,.12); }
+  .footer { position: absolute; left: 70px; right: 70px; bottom: 34px; display: flex; justify-content: space-between;
+            font-size: 15px; color: var(--grey); }
+</style>
+</head>
+<body>
+
+<!-- 1 HERO -->
+<div class="slide">
+  <div class="blob" style="width:760px;height:760px;background:var(--sage);right:-220px;top:-260px;opacity:.75"></div>
+  <div class="blob" style="width:260px;height:260px;background:var(--apricot);left:-90px;bottom:-90px"></div>
+  <div style="position:absolute;left:70px;top:64px;width:500px">
+    <div class="brand">Nid Serein · édition 2026-2027</div>
+    <h1 style="margin:22px 0 22px;font-size:58px">Kit Parent Employeur Assistante maternelle</h1>
+    <p class="sub">Salaire, absences, Pajemploi, congés payés, fin de contrat&nbsp;: <b style="color:var(--teal)">tout est calculé</b>. Vous notez seulement les exceptions.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:34px">
+      <span class="pill"><i></i>Excel &amp; Google Sheets</span>
+      <span class="pill"><i></i>Barèmes au 1er juin 2026</span>
+      <span class="pill"><i></i>Convention IDCC 3239</span>
+      <span class="pill"><i></i>+ Guide PDF 16 pages</span>
+    </div>
+  </div>
+  <img class="shot" src="../assets/shots/mois-novembre.png" style="position:absolute;width:590px;left:620px;top:140px;transform:rotate(2deg)">
+  <div class="tag" style="left:600px;top:112px">Prêt à déclarer</div>
+  <div class="footer"><span>Téléchargement immédiat · fichier modifiable</span><span>1 fichier = 1 enfant · à dupliquer à volonté</span></div>
+</div>
+
+<!-- 2 PAJEMPLOI -->
+<div class="slide" style="background:var(--teal)">
+  <div style="position:absolute;left:70px;top:60px;width:1060px">
+    <div class="brand" style="color:var(--apricot)">Chaque mois</div>
+    <h2 style="color:white;margin-top:16px">Votre déclaration Pajemploi,<br>case par case, déjà prête</h2>
+  </div>
+  <img class="shot" src="../assets/shots/mois-cartes.png" style="position:absolute;width:1060px;left:70px;top:300px;border:none">
+  <div class="callout" style="left:470px;top:690px;width:360px"><b>Heures et jours mensualisés</b>, retenues déduites, heures complémentaires et majorées séparées.</div>
+  <div class="callout" style="right:70px;top:690px;width:300px"><b>Le total à verser</b> à votre assmat, indemnités comprises.</div>
+  <div class="callout" style="left:70px;top:690px;width:360px"><b>Le salaire brut</b> détaillé ligne par ligne, sans formule à écrire.</div>
+</div>
+
+<!-- 3 EXCEPTIONS -->
+<div class="slide">
+  <div class="blob" style="width:420px;height:420px;background:var(--sage);left:-160px;top:-140px;opacity:.8"></div>
+  <div style="position:absolute;left:70px;top:70px;width:440px">
+    <div class="brand">3 minutes par mois</div>
+    <h2 style="margin:18px 0 26px">Notez seulement ce qui change</h2>
+    <p class="sub" style="font-size:20px;margin-bottom:26px">Le mois est prérempli à partir du planning, des vacances et des jours fériés.</p>
+    <div class="check">Absence payée ou retenue&nbsp;: la formule officielle</div>
+    <div class="check">Heures en plus détectées et classées</div>
+    <div class="check">Indemnité d'entretien au minimum légal, jour par jour</div>
+    <div class="check">Feuille de présence A4 à signer</div>
+  </div>
+  <img class="shot" src="../assets/shots/mois-novembre.png" style="position:absolute;width:600px;right:60px;top:70px">
+</div>
+
+<!-- 4 CONGES -->
+<div class="slide" style="background:var(--sage2)">
+  <div style="position:absolute;left:70px;top:70px;width:470px">
+    <div class="brand">Congés payés</div>
+    <h2 style="margin:18px 0 24px">Maintien ou dixième&nbsp;? Le kit choisit le plus favorable</h2>
+    <p class="sub" style="font-size:20px">Droits acquis, comparaison des deux méthodes et calendrier de paiement, pour un accueil sur 52 semaines comme en année incomplète.</p>
+    <div class="card" style="margin-top:34px;width:430px">
+      <div style="font-size:16px;color:var(--grey)">Exemple officiel DREETS</div>
+      <div style="font-size:20px;margin-top:8px">Maintien <b>623,08 €</b> · Dixième <b style="color:var(--terra)">675,00 €</b></div>
+      <div style="font-size:16px;color:var(--grey);margin-top:6px">→ 675 € dus, versés automatiquement les bons mois</div>
+    </div>
+  </div>
+  <img class="shot" src="../assets/shots/conges.png" style="position:absolute;width:560px;right:60px;top:70px">
+</div>
+
+<!-- 5 FIN -->
+<div class="slide">
+  <div class="blob" style="width:520px;height:520px;background:var(--apricot);right:-180px;bottom:-220px;opacity:.7"></div>
+  <img class="shot" src="../assets/shots/fin.png" style="position:absolute;width:560px;left:60px;top:60px">
+  <div style="position:absolute;left:680px;top:90px;width:460px">
+    <div class="brand">Fin de contrat</div>
+    <h2 style="margin:18px 0 26px">Le solde de tout compte, sans rien oublier</h2>
+    <div class="check">Durée du préavis selon le motif et l'ancienneté</div>
+    <div class="check">Régularisation en année incomplète</div>
+    <div class="check">Congés payés acquis et en cours</div>
+    <div class="check">Indemnité de rupture (1/80e)</div>
+    <div class="check">Report automatique sur le dernier mois</div>
+  </div>
+</div>
+
+<!-- 6 CONTENTS -->
+<div class="slide" style="background:white">
+  <div style="position:absolute;left:70px;top:60px;width:1060px;text-align:center">
+    <div class="brand">Ce que vous recevez</div>
+    <h2 style="margin-top:14px">4 fichiers, prêts à l'emploi</h2>
+  </div>
+  <div style="position:absolute;left:70px;right:70px;top:250px;display:grid;grid-template-columns:repeat(4,1fr);gap:26px">
+    <div class="card" style="background:var(--cream)">
+      <img src="../assets/shots/bienvenue.png" style="width:100%;height:190px;object-fit:cover;object-position:top left;border-radius:8px;border:1px solid #e3e3e3">
+      <h3 style="font:600 21px Fraunces,serif;color:var(--teal);margin:16px 0 6px">Le classeur</h3>
+      <p style="font-size:16px;line-height:1.4">17 onglets : contrat, 12 mois, récap annuel, congés, fin de contrat, barèmes.</p>
+    </div>
+    <div class="card" style="background:var(--cream)">
+      <img src="../assets/shots/recap.png" style="width:100%;height:190px;object-fit:cover;object-position:top left;border-radius:8px;border:1px solid #e3e3e3">
+      <h3 style="font:600 21px Fraunces,serif;color:var(--teal);margin:16px 0 6px">Un exemple rempli</h3>
+      <p style="font-size:16px;line-height:1.4">Une année complète pour voir chaque cas : absences, heures en plus, congés.</p>
+    </div>
+    <div class="card" style="background:var(--cream)">
+      <div style="display:flex;gap:8px;height:190px;overflow:hidden"><img src="../assets/shots/guide-p1.png" style="width:48%;border-radius:6px;border:1px solid #e3e3e3"><img src="../assets/shots/guide-p13.png" style="width:48%;border-radius:6px;border:1px solid #e3e3e3"></div>
+      <h3 style="font:600 21px Fraunces,serif;color:var(--teal);margin:16px 0 6px">Le guide PDF</h3>
+      <p style="font-size:16px;line-height:1.4">16 pages : les règles expliquées simplement, Pajemploi, les 10 erreurs à éviter.</p>
+    </div>
+    <div class="card" style="background:var(--cream)">
+      <img src="../assets/shots/courrier.png" style="width:100%;height:190px;object-fit:cover;object-position:top;display:block;border-radius:6px;border:1px solid #e3e3e3">
+      <h3 style="font:600 21px Fraunces,serif;color:var(--teal);margin:16px 0 6px">5 courriers Word</h3>
+      <p style="font-size:16px;line-height:1.4">Retrait de l'enfant, certificat de travail, solde de tout compte, régularisation, congés.</p>
+    </div>
+  </div>
+  <div class="footer" style="justify-content:center;gap:40px"><span>Excel 2010+ · Google Sheets · LibreOffice</span><span>Téléchargement immédiat</span></div>
+</div>
+
+<!-- 7 VERIFIED -->
+<div class="slide" style="background:var(--teal)">
+  <div class="blob" style="width:600px;height:600px;background:var(--teal2);right:-200px;top:-200px"></div>
+  <div style="position:absolute;left:70px;top:70px;width:560px">
+    <div class="brand" style="color:var(--apricot)">Vérifié</div>
+    <h2 style="color:white;margin:18px 0 24px">Testé sur les exemples des guides officiels</h2>
+    <p class="sub" style="color:#cfe0db;font-size:20px">Chaque formule a été contrôlée sur les cas chiffrés publiés par la DREETS et Pajemploi : le kit retrouve les mêmes montants.</p>
+    <div style="margin-top:40px;display:inline-block;background:var(--terra);color:white;border-radius:12px;padding:16px 22px;font:600 19px Inter">Nouveau minimum intégré : 4,20 € brut/h au 1er juin 2026</div>
+  </div>
+  <div class="card" style="position:absolute;right:70px;top:90px;width:470px;padding:30px 32px">
+    <div style="display:grid;grid-template-columns:1fr auto;row-gap:18px;font-size:18px">
+      <span>Mensualisation 52 semaines</span><b class="num" style="font-size:22px">780,00 €</b>
+      <span>Retenue pour absence</span><b class="num" style="font-size:22px">195,00 €</b>
+      <span>Entretien pour 11 h d'accueil</span><b class="num" style="font-size:22px">4,79 €</b>
+      <span>Mois avec 50 h dans la semaine</span><b class="num" style="font-size:22px">402,50 €</b>
+      <span>Congés payés (dixième)</span><b class="num" style="font-size:22px">675,00 €</b>
+      <span>Congés non pris en fin de contrat</span><b class="num" style="font-size:22px">162,00 €</b>
+      <span>Indemnité de rupture</span><b class="num" style="font-size:22px">117,00 €</b>
+      <span>Régularisation de salaire</span><b class="num" style="font-size:22px">240,00 €</b>
+    </div>
+    <div style="margin-top:22px;padding-top:16px;border-top:1px solid #e3e3e3;font-size:15px;color:var(--grey)">50 contrôles automatiques · 7 cas officiels</div>
+  </div>
+</div>
+
+</body>
+</html>

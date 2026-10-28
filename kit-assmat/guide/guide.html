@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Le guide du parent employeur — Assistante maternelle 2026-2027</title>
+<link rel="stylesheet" href="../assets/fonts/local.css">
+<style>
+  :root { --teal:#1F4D4A; --teal2:#2F6B66; --terra:#C8643F; --cream:#FBF7F1; --sage:#DCEAE4; --sage2:#F1F7F4;
+          --ink:#1F2A2B; --grey:#6E7C7B; --line:#D3DEDA; --butter:#FFF6DE; --rose:#FBE0D4; }
+  @page { size: A4; margin: 18mm 17mm 20mm 17mm; }
+  @page :first { margin: 0; }
+  * { box-sizing: border-box; }
+  body { font-family: Inter, sans-serif; font-size: 10pt; line-height: 1.55; color: var(--ink); margin: 0; }
+  h1, h2, h3 { font-family: Fraunces, Georgia, serif; color: var(--teal); font-weight: 600; letter-spacing: -.01em; }
+  h2 { font-size: 22pt; line-height: 1.15; margin: 0 0 4mm; }
+  h3 { font-size: 13pt; margin: 6mm 0 2mm; }
+  p { margin: 0 0 3mm; }
+  .kicker { font: 600 8pt Inter; letter-spacing: .14em; text-transform: uppercase; color: var(--terra); margin-bottom: 2mm; }
+  .lead { font-size: 11.5pt; color: #3c4a4a; margin-bottom: 6mm; }
+  .page { page-break-after: always; }
+  .page:last-child { page-break-after: auto; }
+  .cover { height: 297mm; background: var(--cream); padding: 28mm 22mm 20mm; position: relative; overflow: hidden; }
+  .cover .brand { font: 600 9pt Inter; letter-spacing: .2em; color: var(--terra); }
+  .cover h1 { font-size: 40pt; line-height: 1.04; margin: 34mm 0 6mm; max-width: 150mm; }
+  .cover .sub { font-size: 14pt; color: var(--teal2); margin-bottom: 10mm; font-family: Fraunces, serif; }
+  .cover .pitch { font-size: 11pt; max-width: 120mm; color: #3c4a4a; }
+  .cover .shot { position: absolute; right: -30mm; bottom: 34mm; width: 150mm; border-radius: 3mm;
+                 box-shadow: 0 10mm 24mm rgba(31,77,74,.22); border: 1px solid var(--line); }
+  .cover .foot { position: absolute; left: 22mm; bottom: 18mm; font-size: 8.5pt; color: var(--grey); }
+  .cover .arc { position: absolute; width: 140mm; height: 140mm; border-radius: 50%; background: var(--sage);
+                right: -40mm; top: -50mm; opacity: .7; }
+  .cover .arc2 { position: absolute; width: 60mm; height: 60mm; border-radius: 50%; background: #F7DCCB;
+                 left: -18mm; bottom: 70mm; opacity: .8; }
+  .toc { columns: 2; column-gap: 10mm; margin: 6mm 0; }
+  .toc div { break-inside: avoid; display: flex; justify-content: space-between; border-bottom: 1px dotted var(--line); padding: 1.6mm 0; }
+  .toc b { color: var(--teal); font-weight: 600; }
+  .box { background: var(--sage2); border-left: 1.2mm solid var(--teal2); padding: 4mm 5mm; border-radius: 0 2mm 2mm 0; margin: 4mm 0; break-inside: avoid; }
+  .box.warn { background: #FDF0E9; border-color: var(--terra); }
+  .box.tip { background: var(--butter); border-color: #E2BE6A; }
+  .box h4 { margin: 0 0 1.5mm; font: 600 10pt Inter; color: var(--teal); }
+  .box.warn h4 { color: var(--terra); }
+  .box p:last-child { margin: 0; }
+  .formula { font-family: Fraunces, serif; font-size: 11.5pt; color: var(--teal); background: white; border: 1px solid var(--line);
+             border-radius: 2mm; padding: 3mm 4mm; margin: 3mm 0; text-align: center; break-inside: avoid; }
+  table { width: 100%; border-collapse: collapse; margin: 3mm 0 5mm; font-size: 9.3pt; }
+  tr { break-inside: avoid; }
+  th { background: var(--teal); color: white; font-weight: 600; text-align: left; padding: 2mm 3mm; font-size: 8.6pt; }
+  td { padding: 2mm 3mm; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr:nth-child(even) td { background: #FAFCFB; }
+  td.num, th.num { text-align: right; white-space: nowrap; }
+  .shot { width: 100%; border: 1px solid var(--line); border-radius: 2mm; box-shadow: 0 2mm 6mm rgba(0,0,0,.06); margin: 2mm 0 4mm; }
+  .cap { font-size: 8.3pt; color: var(--grey); margin-top: -2mm; margin-bottom: 4mm; }
+  .steps { counter-reset: s; }
+  .step { display: grid; grid-template-columns: 11mm 1fr; gap: 3mm; margin-bottom: 3mm; break-inside: avoid; }
+  .step::before { counter-increment: s; content: counter(s); font: 600 17pt Fraunces, serif; color: var(--terra);
+                  background: #FDF0E9; border-radius: 50%; width: 10mm; height: 10mm; display: flex; align-items: center; justify-content: center; }
+  .step b { color: var(--teal); }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 6mm; }
+  .err { display: grid; grid-template-columns: 12mm 1fr; gap: 3mm; padding: 3mm 0; border-bottom: 1px solid var(--line); break-inside: avoid; }
+  .err .n { font: 600 20pt Fraunces, serif; color: var(--terra); line-height: 1; }
+  .err h4 { margin: 0 0 1mm; font: 600 10.5pt Inter; color: var(--teal); }
+  .err p { margin: 0; font-size: 9.3pt; }
+  .err .fix { color: var(--teal2); font-size: 8.8pt; margin-top: 1mm; }
+  .tl { position: relative; padding-left: 9mm; }
+  .tl::before { content: ""; position: absolute; left: 2.6mm; top: 2mm; bottom: 2mm; width: .6mm; background: var(--sage); }
+  .tl div { position: relative; margin-bottom: 4mm; break-inside: avoid; }
+  .tl div::before { content: ""; position: absolute; left: -8.2mm; top: 1.2mm; width: 3.6mm; height: 3.6mm; border-radius: 50%; background: var(--terra); }
+  .tl b { color: var(--teal); display: block; font-size: 10.5pt; }
+  .status { display: inline-block; padding: .3mm 2mm; border-radius: 1mm; font-size: 8.6pt; font-weight: 600; white-space: nowrap; }
+  .s-acc { background: #fff; border: 1px solid var(--line); } .s-pay { background: #E2F1E8; } .s-ret { background: var(--rose); }
+  .s-cp { background: #DDEBF8; } .s-fer { background: #ECE6F7; } .s-snp { background: #EFEFEC; }
+  .letter { border: 1px solid var(--line); border-radius: 2mm; padding: 6mm 8mm; font-size: 9.3pt; background: white; }
+  .small { font-size: 8.3pt; color: var(--grey); }
+  .end { background: var(--cream); border-radius: 3mm; padding: 8mm; margin-top: 10mm; }
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<section class="page cover">
+  <div class="arc"></div><div class="arc2"></div>
+  <div class="brand" style="position:relative">NID SEREIN · OUTILS POUR PARENTS EMPLOYEURS</div>
+  <h1 style="position:relative">Le guide du parent employeur</h1>
+  <div class="sub" style="position:relative">Assistante maternelle agréée · Édition 2026-2027</div>
+  <p class="pitch" style="position:relative">Mensualisation, absences, déclaration Pajemploi, congés payés, fin de contrat&nbsp;: les règles expliquées simplement, et la façon de les appliquer en quelques minutes avec votre kit.</p>
+  <img class="shot" src="../assets/shots/mois-novembre.png" alt="">
+  <div class="foot">Convention collective IDCC 3239 · barèmes au 1er juin 2026 · fiches officielles DREETS et Pajemploi</div>
+</section>
+
+<!-- TOC -->
+<section class="page">
+  <div class="kicker">Sommaire</div>
+  <h2>Tout ce qu'il faut savoir, rien de plus</h2>
+  <p class="lead">Employer une assistante maternelle, c'est devenir employeur sans service RH. Ce guide va droit à l'essentiel et renvoie à chaque fois à l'onglet du kit qui fait le calcul pour vous.</p>
+  <div class="toc">
+    <div><b>1. Votre kit en 10 minutes</b><span>3</span></div>
+    <div><b>2. Chaque mois, 3 minutes</b><span>4</span></div>
+    <div><b>3. La mensualisation</b><span>5</span></div>
+    <div><b>4. Les absences</b><span>6</span></div>
+    <div><b>5. Heures en plus, fériés, indemnités</b><span>7</span></div>
+    <div><b>6. Déclarer sur Pajemploi</b><span>8</span></div>
+    <div><b>7. Les congés payés</b><span>9</span></div>
+    <div><b>8. La fin du contrat</b><span>11</span></div>
+    <div><b>9. Les 10 erreurs qui coûtent cher</b><span>13</span></div>
+    <div><b>10. Votre calendrier de l'année</b><span>14</span></div>
+    <div><b>11. Barèmes et sources</b><span>15</span></div>
+    <div><b>12. Modèles de courriers</b><span>16</span></div>
+  </div>
+  <h3>Ce que contient votre kit</h3>
+  <table>
+    <tr><th>Fichier</th><th>À quoi il sert</th></tr>
+    <tr><td><b>Kit-Assmat-2026-2027.xlsx</b></td><td>Le classeur à remplir : contrat, 12 feuilles mensuelles (juin 2026 à mai 2027), récapitulatif, congés payés, fin de contrat, barèmes.</td></tr>
+    <tr><td><b>Kit-Assmat-2026-2027-EXEMPLE.xlsx</b></td><td>Le même classeur déjà rempli (Léo, accueilli chez Sophie 38 h par semaine, 42 semaines par an) pour voir une année complète.</td></tr>
+    <tr><td><b>Guide du parent employeur.pdf</b></td><td>Ce guide.</td></tr>
+    <tr><td><b>Modèles de courriers.docx</b></td><td>5 courriers modifiables : retrait de l'enfant, certificat de travail, solde de tout compte, régularisation, dates de congés.</td></tr>
+  </table>
+  <h3>Ouvrir le classeur</h3>
+  <div class="two">
+    <div class="box"><h4>Excel (Windows, Mac)</h4><p>Double-cliquez sur le fichier. Version 2010 ou plus récente.</p></div>
+    <div class="box"><h4>Google Sheets (gratuit)</h4><p>drive.google.com › Nouveau › Importer un fichier, puis « Ouvrir avec Google Sheets ». Votre copie reste privée.</p></div>
+  </div>
+  <div class="box tip"><h4>Un fichier par enfant</h4><p>Depuis janvier 2026, Pajemploi demande une déclaration distincte pour chaque enfant d'une même fratrie. Faites une copie du classeur pour chaque enfant (et chaque contrat).</p></div>
+</section>
+
+<!-- 1. START -->
+<section class="page">
+  <div class="kicker">1 · Démarrer</div>
+  <h2>Votre kit en 10 minutes</h2>
+  <p class="lead">On remplit une seule fois l'onglet <b>Contrat</b> avec votre contrat de travail sous les yeux. Les cellules jaunes sont à compléter ; tout le reste se calcule.</p>
+  <img class="shot" src="../assets/shots/contrat.png" alt="Onglet Contrat">
+  <p class="cap">L'onglet Contrat. À droite, la mensualisation et les contrôles de conformité se mettent à jour en direct.</p>
+  <div class="steps">
+    <div class="step"><div><b>Les personnes et le contrat.</b> Date d'embauche, type d'accueil (52 semaines, ou 46 semaines ou moins) et, en année incomplète, le nombre de semaines d'accueil programmées.</div></div>
+    <div class="step"><div><b>La semaine type.</b> Horaires d'arrivée et de départ de chaque jour, ou directement un nombre d'heures si les horaires varient.</div></div>
+    <div class="step"><div><b>Le taux horaire.</b> Tel qu'il figure au contrat, en précisant « brut » ou « net ». Le kit vérifie qu'il respecte le minimum conventionnel.</div></div>
+    <div class="step"><div><b>Les indemnités et les congés.</b> Entretien, repas, kilomètres, et le mode de paiement des congés payés prévu au contrat.</div></div>
+    <div class="step"><div><b>Les périodes sans accueil.</b> Congés de l'assmat, semaines non programmées, vacances de l'enfant : les jours concernés sont préremplis dans les mois.</div></div>
+  </div>
+  <div class="box"><h4>Puis, une fois : les congés acquis l'an dernier</h4><p>Dans l'onglet <b>Congés payés</b>, indiquez le total des salaires bruts perçus du 1er juin 2025 au 31 mai 2026 (relevés Pajemploi). Le kit calcule l'indemnité due et la répartit sur les mois où les congés sont pris.</p></div>
+</section>
+
+<!-- 2. MONTHLY -->
+<section class="page">
+  <div class="kicker">2 · Chaque mois</div>
+  <h2>3 minutes par mois</h2>
+  <p class="lead">Chaque feuille mensuelle est préremplie à partir du planning. Vous ne notez que ce qui change : une absence, un départ plus tard, un jour en plus.</p>
+  <img class="shot" src="../assets/shots/mois-extrait.png" alt="Feuille de novembre" style="width:70%;display:block;margin:0 auto 3mm">
+  <p class="cap">Novembre dans l'exemple : deux jours de maladie avec certificat (retenus), deux soirées plus longues (heures en plus en orange), une journée chez les grands-parents (payée).</p>
+  <table>
+    <tr><th>Statut à choisir</th><th>Effet sur le salaire</th></tr>
+    <tr><td><span class="status s-acc">Accueil</span></td><td>Jour normal. Saisissez l'arrivée et le départ seulement s'ils diffèrent du planning.</td></tr>
+    <tr><td><span class="status s-pay">Absence enfant – payée</span></td><td>L'enfant ne vient pas du fait des parents : le salaire est dû, pas d'indemnité d'entretien.</td></tr>
+    <tr><td><span class="status s-ret">Maladie enfant – retenue</span></td><td>Avec certificat médical, dans la limite de la convention (voir p. 6).</td></tr>
+    <tr><td><span class="status s-ret">Absence assmat – non payée</span></td><td>Arrêt maladie de l'assmat, absence non autorisée, enfant malade de l'assmat…</td></tr>
+    <tr><td><span class="status s-cp">Congé payé assmat</span> <span class="status s-ret">Congé sans solde assmat</span></td><td>Congés acquis (payés) ou au-delà des droits (non payés).</td></tr>
+    <tr><td><span class="status s-fer">Férié chômé payé</span> <span class="status s-fer">Férié travaillé (+10 %)</span> <span class="status s-fer">1er mai travaillé</span></td><td>Les jours fériés sont détectés automatiquement ; changez le statut si l'enfant est accueilli.</td></tr>
+    <tr><td><span class="status s-snp">Semaine non programmée</span></td><td>Année incomplète : semaine sans accueil prévue au contrat, déjà exclue du salaire mensualisé.</td></tr>
+  </table>
+  <div class="box tip"><h4>Imprimez-la : c'est votre feuille de présence</h4><p>Chaque mois tient sur une page A4 avec les signatures du parent et de l'assmat en bas. Un document simple qui évite les désaccords en fin de contrat.</p></div>
+</section>
+
+<!-- 3. MENSUALISATION -->
+<section class="page">
+  <div class="kicker">3 · Les bases</div>
+  <h2>La mensualisation</h2>
+  <p class="lead">Le salaire d'une assistante maternelle est toujours mensualisé : le même montant chaque mois, quel que soit le nombre de jours du mois. Tout le reste en découle.</p>
+  <div class="two">
+    <div>
+      <h3>Accueil sur 52 semaines</h3>
+      <p>L'enfant est accueilli toute l'année, sauf pendant les congés de l'assmat (5 semaines au plus). Les congés payés sont <b>inclus</b> dans le salaire.</p>
+      <div class="formula">taux × heures/semaine × 52 ÷ 12</div>
+      <p class="small">Exemple officiel : 4,50 € × 40 h × 52 ÷ 12 = <b>780 €</b> brut par mois.</p>
+    </div>
+    <div>
+      <h3>Accueil sur 46 semaines ou moins</h3>
+      <p>Vous retirez des 52 semaines celles où l'enfant ne vient pas, et les 5 semaines de repos de l'assmat (sans compter deux fois les semaines communes). Les congés payés sont versés <b>en plus</b>.</p>
+      <div class="formula">taux × heures/semaine × semaines ÷ 12</div>
+      <p class="small">Exemple officiel : 4,50 € × 40 h × 36 ÷ 12 = <b>540 €</b> brut par mois.</p>
+    </div>
+  </div>
+  <h3>Le taux horaire minimum</h3>
+  <table>
+    <tr><th>Au 1er juin 2026</th><th class="num">Brut / heure</th><th class="num">Net / heure</th></tr>
+    <tr><td>Minimum conventionnel (avenant n°10 du 5 février 2026)</td><td class="num">4,20 €</td><td class="num">3,28 €</td></tr>
+    <tr><td>Avec le titre « assistant maternel – garde d'enfants »</td><td class="num">4,37 €</td><td class="num">3,41 €</td></tr>
+    <tr><td>Minimum légal (0,281 × SMIC)</td><td class="num">3,46 €</td><td class="num">—</td></tr>
+  </table>
+  <div class="box warn"><h4>Contrat signé avant juin 2026 ?</h4><p>L'ancien minimum était de 3,64 € brut. Si votre taux est inférieur à 4,20 € brut, il doit être relevé depuis le 1er juin 2026. L'onglet Contrat vous le signale immédiatement.</p></div>
+  <div class="box"><h4>Bon à savoir</h4><p>Le taux se négocie librement au-dessus du minimum, mais une indexation automatique (sur le SMIC par exemple) ne peut pas être prévue au contrat. La mensualisation se calcule toujours sur 12 mois à partir de la date d'embauche, même pour un contrat plus court.</p></div>
+</section>
+
+<!-- 4. ABSENCES -->
+<section class="page">
+  <div class="kicker">4 · Les absences</div>
+  <h2>Quand retenir, et combien</h2>
+  <p class="lead">C'est la source de litige numéro un. La règle est simple : si l'enfant ne vient pas du fait des parents, le salaire est dû. Les retenues sont limitées à des cas précis.</p>
+  <table>
+    <tr><th>Situation</th><th>Salaire</th></tr>
+    <tr><td>Vacances ou jours « en famille » non prévus au contrat, enfant gardé par les grands-parents, parent en congé ou au chômage</td><td><b>Dû en entier</b></td></tr>
+    <tr><td>Enfant malade, avec certificat médical ou bulletin d'hospitalisation</td><td>Retenue possible : <b>5 jours</b> d'absences courtes par période de 12 mois (à compter de l'embauche), et une absence d'au moins <b>14 jours calendaires consécutifs</b>. Au-delà, il faut reprendre le paiement ou rompre le contrat.</td></tr>
+    <tr><td>Arrêt maladie de l'assmat, congé sans solde, congé pour enfant malade de l'assmat</td><td>Retenue</td></tr>
+    <tr><td>Jour férié chômé (hors 1er mai)</td><td>Payé si l'assmat a travaillé le dernier jour prévu avant et le premier jour prévu après</td></tr>
+    <tr><td>1er mai chômé</td><td>Toujours payé</td></tr>
+  </table>
+  <h3>La formule de la convention (article 111)</h3>
+  <div class="two">
+    <div><p><b>52 semaines</b> : on compte en heures.</p>
+      <div class="formula">salaire × heures d'absence ÷ heures prévues dans le mois</div></div>
+    <div><p><b>46 semaines ou moins</b> : on compte en jours.</p>
+      <div class="formula">salaire × jours d'absence ÷ jours prévus dans le mois</div></div>
+  </div>
+  <p>Les « heures (ou jours) prévues dans le mois » sont celles du planning habituel, en comptant aussi les semaines sans accueil, les jours fériés et les jours d'absence. C'est ce que fait la colonne <b>Prévu</b> de vos feuilles mensuelles.</p>
+  <div class="box"><h4>Exemple officiel (DREETS)</h4><p>Salaire de 780 €, une semaine de 40 h sans solde en février, 160 h prévues dans le mois : retenue = 780 × 40 ÷ 160 = <b>195 €</b>. Le kit retrouve exactement ce montant.</p></div>
+  <div class="box warn"><h4>À ne pas faire</h4><p>Retenir « au trentième » ou « au jour calendaire », ou retenir une absence sans certificat médical. Le kit vous alerte dès que les retenues pour maladie de l'enfant dépassent 5 jours.</p></div>
+</section>
+
+<!-- 5. EXTRAS -->
+<section class="page">
+  <div class="kicker">5 · Ce qui s'ajoute</div>
+  <h2>Heures en plus, jours fériés, indemnités</h2>
+  <h3>Heures complémentaires et majorées</h3>
+  <p>Une heure est « en plus » dès qu'elle dépasse le planning prévu. Jusqu'à 45 h dans la semaine, c'est une <b>heure complémentaire</b>, payée au taux normal (sauf majoration prévue au contrat). Au-delà de 45 h, c'est une <b>heure majorée</b>, avec au moins <b>10 %</b> de majoration.</p>
+  <div class="box"><h4>L'exemple du guide Pajemploi</h4><p>Contrat de 40 h, 3 € net de l'heure, 3,50 € pour les heures majorées. Une semaine de 50 h : 5 h complémentaires et 5 h majorées. Salaire du mois = 370 + 5 × 3 + 5 × 3,50 = <b>402,50 € net</b>. Le kit trouve le même résultat.</p></div>
+  <h3>Jours fériés travaillés</h3>
+  <p>Un jour férié travaillé (prévu au contrat ou accepté par l'assmat) est payé avec <b>10 %</b> de majoration. Les heures travaillées le <b>1er mai</b> sont payées en plus du salaire mensualisé.</p>
+  <h3>Indemnité d'entretien</h3>
+  <p>Elle couvre l'eau, l'électricité, les jeux, le matériel… Elle n'est due que les jours où l'enfant est présent.</p>
+  <table>
+    <tr><th>Durée d'accueil dans la journée</th><th>Minimum au 1er juin 2026</th></tr>
+    <tr><td>9 heures</td><td><b>3,92 €</b> (90 % du minimum garanti de 4,35 €)</td></tr>
+    <tr><td>Moins de 9 heures</td><td>Le plus élevé entre <b>2,65 €</b> et 3,92 € ÷ 9 × nombre d'heures</td></tr>
+    <tr><td>Plus de 9 heures</td><td>3,92 € + 0,435 € par heure au-delà de 9 h (11 h → 4,79 €)</td></tr>
+  </table>
+  <h3>Repas et kilomètres</h3>
+  <p>Si l'assmat fournit les repas, une indemnité de repas fixée au contrat est due pour chaque repas fourni. Si vous fournissez les repas, rien n'est dû. Les trajets en voiture demandés par les parents ouvrent droit à une indemnité kilométrique comprise entre le barème de l'administration et le barème fiscal, partagée entre les familles selon le nombre d'enfants transportés.</p>
+  <div class="box tip"><h4>Les indemnités ne sont pas du salaire</h4><p>Elles ne supportent pas de cotisations et se déclarent dans des cases séparées sur Pajemploi. Ne les ajoutez jamais au salaire net.</p></div>
+</section>
+
+<!-- 6. PAJEMPLOI -->
+<section class="page">
+  <div class="kicker">6 · Pajemploi</div>
+  <h2>Déclarer, case par case</h2>
+  <p class="lead">Chaque feuille mensuelle contient un cadre vert « À déclarer sur Pajemploi » : les chiffres sont dans l'ordre du formulaire.</p>
+  <img class="shot" src="../assets/shots/mois-cartes.png" alt="Cadre Pajemploi" style="width:72%;display:block;margin:0 auto 3mm">
+  <table>
+    <tr><th>Case Pajemploi</th><th>Ce qu'il faut y mettre</th></tr>
+    <tr><td>Période</td><td>Du 1er au dernier jour du mois (sauf embauche ou départ en cours de mois)</td></tr>
+    <tr><td>Nombre d'heures normales</td><td>Les heures <b>mensualisées</b>, pas les heures réelles, diminuées des absences retenues</td></tr>
+    <tr><td>Nombre de jours d'activité</td><td>Les jours mensualisés (arrondis au-dessus), diminués des absences retenues</td></tr>
+    <tr><td>Congés payés</td><td>Année incomplète : jours de congés payés versés ce mois-ci. Accueil sur 52 semaines : rien (ils sont dans le salaire). Toujours 0 la première année.</td></tr>
+    <tr><td>Heures complémentaires / majorées</td><td>À distinguer, comme dans le kit</td></tr>
+    <tr><td>Salaire net total</td><td>Salaire mensualisé − retenues + heures en plus + congés payés versés</td></tr>
+    <tr><td>Indemnités</td><td>Entretien, repas, kilomètres, et indemnité de rupture le dernier mois</td></tr>
+  </table>
+  <div class="box"><h4>Quand ? Comment payer ?</h4><p>Entre le 25 du mois et le 5 du mois suivant ; une déclaration validée reste modifiable pendant un mois. Avec <b>Pajemploi+</b> (gratuit), Pajemploi prélève le salaire, moins votre complément de mode de garde, et le verse à l'assmat.</p></div>
+  <div class="box tip"><h4>Pourquoi le net est « estimé »</h4><p>Le kit passe du brut au net avec un taux de cotisations salariales de 21,88 % (23,18 % en Alsace-Moselle), qui correspond aux minima officiels (4,20 € brut = 3,28 € net). Si votre contrat fixe un taux <b>net</b>, saisissez-le en net : votre salaire net déclaré sera exact. Pajemploi calcule ensuite le brut et les cotisations.</p></div>
+</section>
+
+<!-- 7. CP -->
+<section class="page">
+  <div class="kicker">7 · Congés payés</div>
+  <h2>Acquérir, prendre, payer</h2>
+  <h3>Combien de jours ?</h3>
+  <p><b>2,5 jours ouvrables par mois</b> travaillé du 1er juin au 31 mai, arrondis au jour supérieur, dans la limite de <b>30 jours</b> (5 semaines). Un mois même partiellement travaillé compte. Un arrêt maladie ouvre aussi des droits (2 jours par mois). Si l'assmat n'a pas acquis 30 jours, elle peut compléter son repos par des congés sans solde.</p>
+  <h3>Quand les prendre ?</h3>
+  <ul>
+    <li>Avec un seul employeur, c'est vous qui fixez les dates, et vous les communiquez au plus tard le <b>1er mars</b>.</li>
+    <li>Avec plusieurs employeurs, on cherche un accord avant le 1er mars ; à défaut, l'assmat fixe elle-même 4 semaines entre le 1er mai et le 31 octobre et 1 semaine en hiver.</li>
+    <li>Le congé principal (2 à 4 semaines continues) se prend entre le 1er mai et le 31 octobre ; tout doit être soldé avant le 30 avril suivant.</li>
+    <li>Une semaine complète de congés compte pour <b>6 jours ouvrables</b>, quel que soit le nombre de jours travaillés. Un jour férié n'est pas décompté.</li>
+  </ul>
+  <h3>Combien payer ? La méthode la plus favorable</h3>
+  <div class="two">
+    <div><div class="formula">Maintien : salaire mensualisé ÷ 26 × jours</div></div>
+    <div><div class="formula">Dixième : 10 % des salaires bruts de la période</div></div>
+  </div>
+  <p>Le dixième se calcule sur tous les salaires bruts du 1er juin au 31 mai, congés payés compris, sans les indemnités. On verse le plus élevé des deux.</p>
+  <table>
+    <tr><th></th><th>52 semaines</th><th>46 semaines ou moins</th></tr>
+    <tr><td><b>Paiement</b></td><td>Le salaire est maintenu pendant les congés. Si le dixième est plus élevé, le complément est versé avec la dernière semaine de congés.</td><td>L'indemnité s'ajoute au salaire, selon le contrat : en une fois en juin, lors du congé principal, ou au fur et à mesure des congés pris.</td></tr>
+    <tr><td><b>Dans le kit</b></td><td>Complément ajouté automatiquement le bon mois</td><td>Montant ajouté automatiquement au(x) bon(s) mois</td></tr>
+  </table>
+</section>
+
+<section class="page">
+  <div class="kicker">7 · Congés payés (suite)</div>
+  <h2>Un exemple chiffré</h2>
+  <p>Accueil sur 36 semaines, 40 h, 4,50 € brut : salaire mensualisé 540 €. Au 31 mai, l'assmat a acquis 30 jours et perçu 6 750 € bruts sur l'année.</p>
+  <table>
+    <tr><th>Méthode</th><th>Calcul</th><th class="num">Montant</th></tr>
+    <tr><td>Maintien de salaire</td><td>540 ÷ 26 × 30</td><td class="num">623,08 €</td></tr>
+    <tr><td>Dixième</td><td>10 % × 6 750</td><td class="num"><b>675,00 €</b></td></tr>
+  </table>
+  <p>Le dixième est plus favorable : 675 € sont dus. Payés au fur et à mesure, 3 semaines en août (18 jours) donnent 18 ÷ 30 × 675 = <b>405 €</b> en plus du salaire d'août, puis 135 € pour chacune des deux autres semaines.</p>
+  <img class="shot" src="../assets/shots/conges.png" alt="Onglet Congés payés" style="width:82%;display:block;margin:4mm auto">
+  <p class="cap" style="text-align:center">L'onglet Congés payés de l'exemple : la méthode la plus favorable est repérée et le calendrier de paiement se remplit seul.</p>
+</section>
+
+<!-- 8. FIN -->
+<section class="page">
+  <div class="kicker">8 · Fin du contrat</div>
+  <h2>Rompre le contrat sans rien oublier</h2>
+  <p class="lead">Pas de rupture conventionnelle ni de licenciement « classique » : les parents exercent leur <b>droit de retrait de l'enfant</b>, quel qu'en soit le motif.</p>
+  <h3>Le préavis</h3>
+  <table>
+    <tr><th>Ancienneté à la date de la lettre</th><th>Retrait par les parents</th><th>Démission de l'assmat</th></tr>
+    <tr><td>Moins de 3 mois</td><td>8 jours calendaires</td><td>Aucun</td></tr>
+    <tr><td>De 3 mois à moins d'1 an</td><td>15 jours calendaires</td><td>15 jours calendaires</td></tr>
+    <tr><td>1 an et plus</td><td>1 mois</td><td>1 mois</td></tr>
+  </table>
+  <p>Le préavis démarre à la première présentation de la lettre recommandée (ou à la remise en main propre contre décharge). Des congés payés pris pendant le préavis le prolongent. Pendant la période d'essai, il n'y a pas de préavis. En cas de suspension ou de retrait d'agrément, la rupture est immédiate, sans préavis ni indemnité de rupture.</p>
+  <h3>Les sommes à verser</h3>
+  <table>
+    <tr><th>Somme</th><th>Quand</th><th>Calcul</th></tr>
+    <tr><td><b>Indemnité de rupture</b></td><td>Retrait de l'enfant (ou décès de l'enfant) après au moins 9 mois d'accueil. Pas en cas de démission, de retraite, de faute grave ou de retrait d'agrément.</td><td>1/80e des salaires bruts perçus pendant tout le contrat. Sans cotisations.</td></tr>
+    <tr><td><b>Congés payés</b></td><td>Toujours</td><td>Les congés acquis et non payés, plus ceux en cours d'acquisition, selon la méthode la plus favorable</td></tr>
+    <tr><td><b>Régularisation</b></td><td>Accueil sur 46 semaines ou moins</td><td>Heures réellement effectuées − heures payées depuis la dernière date anniversaire. Seulement si l'écart est en faveur de l'assmat.</td></tr>
+  </table>
+  <div class="box"><h4>Documents à remettre</h4><p>Dernier bulletin (Pajemploi), certificat de travail, reçu pour solde de tout compte, attestation France Travail. Les modèles sont fournis (p. 16).</p></div>
+</section>
+
+<section class="page">
+  <div class="kicker">8 · Fin du contrat (suite)</div>
+  <h2>Le solde de tout compte, calculé</h2>
+  <p>Saisissez le motif, la date de la lettre et le dernier jour du contrat : le kit calcule le préavis, la régularisation, les congés payés et l'indemnité de rupture, puis reporte automatiquement les sommes sur le dernier mois.</p>
+  <img class="shot" src="../assets/shots/fin.png" alt="Onglet Fin de contrat" style="width:78%;display:block;margin:4mm auto">
+  <div class="box"><h4>La régularisation, en pratique</h4><p>En année incomplète, faites chaque année, à la date anniversaire du contrat, une <b>régularisation prévisionnelle</b> écrite et signée (modèle fourni). Elle ne donne lieu à aucun paiement en cours de contrat : on compense tout à la fin. Les heures des jours fériés chômés payés et des absences payées comptent comme effectuées.</p></div>
+</section>
+
+<!-- 9. ERRORS -->
+<section class="page">
+  <div class="kicker">9 · À éviter</div>
+  <h2>Les 10 erreurs qui coûtent cher</h2>
+  <div class="err"><div class="n">1</div><div><h4>Garder un taux horaire sous le nouveau minimum</h4><p>4,20 € brut depuis le 1er juin 2026 (4,37 € avec le titre de branche).</p><p class="fix">Le kit : contrôle automatique dans l'onglet Contrat.</p></div></div>
+  <div class="err"><div class="n">2</div><div><h4>Déclarer les heures réelles au lieu des heures mensualisées</h4><p>Pajemploi attend les heures et jours prévus par la mensualisation, pas ceux du mois.</p><p class="fix">Le kit : cadre « À déclarer sur Pajemploi ».</p></div></div>
+  <div class="err"><div class="n">3</div><div><h4>Retenir une absence qui doit être payée</h4><p>Vacances non prévues des parents, garde par la famille : le salaire est dû.</p><p class="fix">Le kit : statut « Absence enfant – payée ».</p></div></div>
+  <div class="err"><div class="n">4</div><div><h4>Dépasser la limite des retenues pour maladie</h4><p>5 jours d'absences courtes sur 12 mois, avec certificat médical, sauf absence d'au moins 14 jours consécutifs.</p><p class="fix">Le kit : alerte au-delà de 5 jours.</p></div></div>
+  <div class="err"><div class="n">5</div><div><h4>Calculer une retenue « au trentième »</h4><p>La convention impose une formule en heures (52 semaines) ou en jours (46 semaines ou moins).</p><p class="fix">Le kit : formule officielle, appliquée jour par jour.</p></div></div>
+  <div class="err"><div class="n">6</div><div><h4>Ajouter les indemnités au salaire net</h4><p>Entretien, repas et kilomètres ont leurs propres cases et ne supportent pas de cotisations.</p><p class="fix">Le kit : salaire et indemnités séparés.</p></div></div>
+  <div class="err"><div class="n">7</div><div><h4>Une indemnité d'entretien trop basse, ou versée à tort</h4><p>Minimum 3,92 € pour 9 h et 2,65 € par jour ; rien les jours où l'enfant est absent.</p><p class="fix">Le kit : calcul à la journée, selon la durée réelle.</p></div></div>
+  <div class="err"><div class="n">8</div><div><h4>Payer les congés au maintien sans comparer au dixième</h4><p>La loi impose la méthode la plus favorable à la salariée.</p><p class="fix">Le kit : comparaison automatique.</p></div></div>
+  <div class="err"><div class="n">9</div><div><h4>Année incomplète : oublier de payer les congés en plus</h4><p>Le salaire mensualisé ne contient pas les congés payés dans ce cas.</p><p class="fix">Le kit : ajout automatique selon le mode prévu au contrat.</p></div></div>
+  <div class="err"><div class="n">10</div><div><h4>Bâcler la fin de contrat</h4><p>Préavis, régularisation, congés acquis et en cours, indemnité de rupture : chaque oubli peut finir aux prud'hommes.</p><p class="fix">Le kit : onglet Fin de contrat.</p></div></div>
+</section>
+
+<!-- 10. CALENDAR -->
+<section class="page">
+  <div class="kicker">10 · Calendrier</div>
+  <h2>Votre année de parent employeur</h2>
+  <div class="tl">
+    <div><b>Chaque mois, du 25 au 5</b>Déclaration Pajemploi, puis salaire versé à la date prévue au contrat.</div>
+    <div><b>Avant le 1er mars</b>Fixer et communiquer les dates de congés payés de l'année.</div>
+    <div><b>1er mai</b>Début de la période du congé principal (jusqu'au 31 octobre).</div>
+    <div><b>31 mai</b>Fin de la période d'acquisition : l'onglet Congés payés donne l'indemnité due. Dernier mois de cette édition du kit.</div>
+    <div><b>Juin</b>Paiement des congés si le contrat prévoit « en une fois en juin ». Démarrage de l'édition suivante du kit, avec les montants reportés.</div>
+    <div><b>Date anniversaire du contrat</b>Année incomplète : régularisation prévisionnelle écrite et signée, et planification des semaines d'accueil des 12 mois suivants.</div>
+    <div><b>À chaque revalorisation</b>SMIC, minimum garanti, salaires conventionnels : mettez à jour l'onglet Barèmes, tout le classeur suit.</div>
+    <div><b>Au printemps</b>Attestation fiscale Pajemploi : les frais de garde d'un enfant de moins de 6 ans ouvrent droit à un crédit d'impôt (voir impots.gouv.fr).</div>
+    <div><b>30 avril</b>Date limite pour solder les congés acquis l'année précédente.</div>
+  </div>
+  <div class="box tip"><h4>Le bon réflexe</h4><p>En cas de doute sur une situation particulière, le relais petite enfance (RPE) de votre commune est un interlocuteur gratuit, tout comme les services de renseignement de la DREETS de votre région.</p></div>
+</section>
+
+<!-- 11. BAREMES -->
+<section class="page">
+  <div class="kicker">11 · Références</div>
+  <h2>Barèmes au 1er juin 2026</h2>
+  <table>
+    <tr><th>Paramètre</th><th class="num">Valeur</th><th>Texte</th></tr>
+    <tr><td>SMIC horaire brut</td><td class="num">12,31 €</td><td>Arrêté du 22 mai 2026</td></tr>
+    <tr><td>Minimum garanti (MG)</td><td class="num">4,35 €</td><td>Au 1er juin 2026</td></tr>
+    <tr><td>Salaire minimum conventionnel brut</td><td class="num">4,20 €</td><td>Avenant n°10 du 5 février 2026, arrêté d'extension du 4 mai 2026</td></tr>
+    <tr><td>Minimum avec titre de branche</td><td class="num">4,37 €</td><td>Même avenant</td></tr>
+    <tr><td>Minimum légal (0,281 × SMIC)</td><td class="num">3,46 €</td><td>Art. D.423-9 CASF</td></tr>
+    <tr><td>Indemnité d'entretien, 9 h</td><td class="num">3,92 €</td><td>Art. 114-1 CCN (90 % du MG)</td></tr>
+    <tr><td>Plancher d'entretien par jour</td><td class="num">2,65 €</td><td>Art. 114-1 CCN</td></tr>
+    <tr><td>Majoration au-delà de 45 h</td><td class="num">10 % min.</td><td>Art. 110 CCN</td></tr>
+    <tr><td>Jour férié travaillé</td><td class="num">+10 %</td><td>Art. 47-2 CCN</td></tr>
+    <tr><td>Indemnité de rupture</td><td class="num">1/80e</td><td>Art. 121-1 CCN (9 mois d'accueil minimum)</td></tr>
+  </table>
+  <h3>Sources</h3>
+  <ul class="small">
+    <li>Convention collective nationale des particuliers employeurs et de l'emploi à domicile du 15 mars 2021 (IDCC 3239), socle spécifique assistant maternel.</li>
+    <li>DREETS Bourgogne-Franche-Comté, <i>Guide assistants maternels</i>, juin 2026.</li>
+    <li>DREETS Pays de la Loire, <i>Rémunération, indemnités et frais</i>, fiche au 12 juin 2026.</li>
+    <li>DREETS Occitanie (DDETS 31), fiches mensualisation et régularisation, novembre 2024.</li>
+    <li>Pajemploi, <i>Guide pratique pour le parent employeur d'un assistant maternel agréé</i> ; bulletin d'information n°6.</li>
+    <li>Code de l'action sociale et des familles, articles L.423-1 et suivants, D.423-6 à D.423-9.</li>
+  </ul>
+  <div class="box"><h4>Contrôlé sur les exemples officiels</h4><p>Les formules du classeur ont été vérifiées sur les exemples chiffrés de ces guides : mensualisation, retenues pour absence, entretien, heures complémentaires et majorées, congés payés (maintien et dixième), régularisation, indemnités de fin de contrat.</p></div>
+</section>
+
+<!-- 12. LETTERS -->
+<section class="page">
+  <div class="kicker">12 · Modèles</div>
+  <h2>Modèles de courriers</h2>
+  <p>Les cinq modèles sont fournis au format Word, prêts à compléter : remplacez les passages entre crochets.</p>
+  <table>
+    <tr><th>Modèle</th><th>Quand l'utiliser</th></tr>
+    <tr><td>Lettre de retrait de l'enfant</td><td>Mettre fin au contrat (recommandé avec accusé de réception, ou remise en main propre contre décharge)</td></tr>
+    <tr><td>Certificat de travail</td><td>À remettre le dernier jour du contrat</td></tr>
+    <tr><td>Reçu pour solde de tout compte</td><td>Détail des sommes versées à la fin du contrat</td></tr>
+    <tr><td>Régularisation prévisionnelle annuelle</td><td>Année incomplète, à chaque date anniversaire</td></tr>
+    <tr><td>Dates de congés payés</td><td>À communiquer avant le 1er mars</td></tr>
+  </table>
+  <div class="letter">
+    <p class="small">Extrait — Lettre de retrait de l'enfant</p>
+    <p>Madame,</p>
+    <p>Par la présente, nous vous informons de notre décision de mettre fin au contrat de travail qui nous lie depuis le [date d'embauche] pour l'accueil de notre enfant [prénom], en exerçant notre droit de retrait conformément à l'article 119 de la convention collective des particuliers employeurs et de l'emploi à domicile.</p>
+    <p>Votre préavis de [durée] débutera à la date de première présentation de ce courrier. Votre contrat prendra fin le [date]. Nous vous remettrons à cette date votre certificat de travail, le reçu pour solde de tout compte et l'attestation destinée à France Travail.</p>
+    <p>Nous vous remercions pour [l'attention portée à notre enfant]…</p>
+  </div>
+  <div class="end">
+    <p class="small"><b>Avertissement.</b> Ce guide et le classeur qui l'accompagne sont des outils d'information et d'aide au calcul, établis à partir des textes et fiches officielles en vigueur au 1er juin 2026. Ils ne remplacent pas un conseil juridique personnalisé. Les montants nets sont des estimations ; Pajemploi calcule les cotisations exactes. En cas de changement de barème, mettez à jour l'onglet Barèmes du classeur.</p>
+    <p class="small" style="margin:0">© Nid Serein, 2026 — usage personnel. Mis à jour le 28 octobre 2026.</p>
+  </div>
+</section>
+
+</body>
+</html>
